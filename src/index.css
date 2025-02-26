@@ -1,0 +1,66 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+@import 'tailwindcss';
+
+@theme {
+  --color-bg: #111111;
+  --color-surface: #1a1a1a;
+  --color-text: #ffffff;
+  --color-border: #333333;
+  --color-subtext: #999999;
+  --color-succes: #32936f;
+  --color-error: #ee0000;
+  --color-warning: #ffcc00;
+}
+
+@layer base {
+  /* ---------------------- Modern Theme Principium ------------------------- */
+
+  .h1,
+  .h2,
+  .h3,
+  .p,
+  .small,
+  .btn {
+    font-family: 'Inter', 'Open Sans';
+  }
+  .h1 {
+    font-size: 67.77px;
+    line-height: 109.7px;
+    font-weight: 700;
+  }
+  .h2 {
+    font-size: 41.89px;
+    line-height: 67.77px;
+    font-weight: 600;
+  }
+  .h3 {
+    font-size: 25.89px;
+    line-height: 41.89px;
+    font-weight: 500;
+  }
+  .p {
+    font-size: 16px;
+    line-height: 25.89px;
+    font-weight: 400;
+  }
+  .small {
+    font-size: 9.89px;
+    line-height: 16px;
+    font-weight: 300;
+  }
+  .btn {
+    font-size: 18px;
+    line-height: 29.1px;
+    font-weight: 600;
+  }
+  /* ------------------------------------------------------------------------ */
+  * {
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+  body {
+    background: #111111;
+    color: white;
+  }
+}
