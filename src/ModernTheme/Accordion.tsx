@@ -82,12 +82,12 @@ const AccordionContent = ({
 
   return (
     <div
-      className={`p text-subtext grid transition-all duration-300 ${
+      className={`text-subtext grid transition-all duration-300 ${
         context.isOpen ? 'mb-4 grid-rows-[1fr]' : 'grid-rows-[0fr]'
       }`}
       {...props}
     >
-      <div className="overflow-hidden">{children}</div>
+      <div className="p overflow-hidden">{children}</div>
     </div>
   );
 };
