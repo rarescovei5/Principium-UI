@@ -8,13 +8,6 @@ const AlertContext = createContext<AlertContextType>({
   variant: 'normal',
 });
 
-/**
- * Create an alert where you can put anywhere you want
- * @param variant
- * "normal" (or just undefined) or "destructive"
- * @param children
- * Contains AlertTitle, AlertIcon, AlertDescription
- */
 const Alert = ({
   children,
   variant,
@@ -49,9 +42,6 @@ const Alert = ({
   );
 };
 
-/**
- * Used within an Alert Component
- */
 const AlertIcon = ({
   className,
   children,
@@ -72,9 +62,6 @@ const AlertIcon = ({
   );
 };
 
-/**
- * Used within an Alert Component
- */
 const AlertTitle = ({
   children,
   className,
@@ -97,9 +84,6 @@ const AlertTitle = ({
   );
 };
 
-/**
- * Used within an Alert Component
- */
 const AlertDescription = ({
   children,
   className,
@@ -122,9 +106,6 @@ const AlertDescription = ({
   );
 };
 
-/**
- * Used within an Alert Component
- */
 const AlertCircle = ({
   className,
   ...props

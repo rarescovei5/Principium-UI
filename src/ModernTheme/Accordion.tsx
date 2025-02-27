@@ -10,11 +10,6 @@ const AccordionContext = createContext<AccordionContextType>({
   toggle: () => {},
 });
 
-/**
- * AccordionItem is a provider and uses context to pass isOpen and toggle
- * to the children, this is to make a relation between them
- * [overwrites classes]
- */
 const AccordionItem = ({
   children,
   className,
@@ -36,11 +31,6 @@ const AccordionItem = ({
   );
 };
 
-/**
- * This toggles the visibility of the content it is associated to,
- * It gets the context from the item it is in and acceses the toggle method
- * [overwrites classes]
- */
 const AccordionTrigger = ({
   children,
   className,
@@ -79,11 +69,6 @@ const AccordionTrigger = ({
   );
 };
 
-/**
- * This is for the content of the AccordionItem,
- * I suggest just putting text
- * [overwrites classes]
- */
 const AccordionContent = ({
   className,
   children,
@@ -107,11 +92,6 @@ const AccordionContent = ({
   );
 };
 
-/**
- * Used with Item which contains a Trigger and a Content component.
- * You could also use a div that has display flex flex-col.
- * [overwrites classes]
- */
 const Accordion = ({
   className,
   children,
