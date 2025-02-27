@@ -85,8 +85,7 @@ const AlertTitle = ({
   props?: any;
 }) => {
   const context = useContext(AlertContext);
-  if (!context)
-    console.warn('AlertTitle must be used within an Alert Component');
+
   return (
     <div
       style={{ gridArea: 'TT' }}
@@ -111,8 +110,6 @@ const AlertDescription = ({
   props?: any;
 }) => {
   const context = useContext(AlertContext);
-  if (!context)
-    console.warn('AlertDescription must be used within an Alert Component');
 
   return (
     <div

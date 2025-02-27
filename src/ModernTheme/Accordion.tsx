@@ -53,8 +53,6 @@ const AccordionTrigger = ({
   props?: any;
 }) => {
   const context = useContext(AccordionContext);
-  if (!context)
-    console.warn('AccordionTrigger must be use insde of a AccordionItem!');
 
   return (
     <button
@@ -96,8 +94,6 @@ const AccordionContent = ({
   className?: string;
 }) => {
   const context = useContext(AccordionContext);
-  if (!context)
-    console.warn('AccordionTrigger must be use insde of a AccordionItem!');
 
   return (
     <div
