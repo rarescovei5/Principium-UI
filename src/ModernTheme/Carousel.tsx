@@ -1,3 +1,4 @@
+//Another unrefactorable BEAST!
 import {
   createContext,
   SetStateAction,
@@ -76,10 +77,10 @@ const NavButton = ({
     direction === 'prev'
       ? isHorizontal
         ? 'right-[calc(100%+1rem)] top-1/2 -translate-y-1/2'
-        : 'bottom-[calc(100%+1rem)] left-1/2 -translate-x-1/2'
+        : 'bottom-[calc(100%+0.5rem)] left-1/2 -translate-x-1/2'
       : isHorizontal
       ? 'left-[calc(100%+1rem)] top-1/2 -translate-y-1/2'
-      : 'top-[calc(100%+1rem)] left-1/2 -translate-x-1/2';
+      : 'top-[calc(100%+0.5rem)] left-1/2 -translate-x-1/2';
   const rotation =
     direction === 'prev'
       ? isHorizontal
@@ -92,7 +93,7 @@ const NavButton = ({
   return (
     <Button
       variant="outline"
-      className={`absolute ${position}`}
+      className={`absolute  ${position}`}
       onClick={onClick}
       icon
       disabled={!disabled}
@@ -148,13 +149,11 @@ const CarouselContent = ({
   }, [children, context.setMaxIndex]);
 
   return (
-    <div ref={carouselRef} className="overflow-hidden flex-1 min-h-0 min-w-0">
+    <div ref={carouselRef} className="overflow-hidden flex-1">
       <div
         ref={containerRef}
-        className={`flex ${
-          context.orientation === 'horizontal'
-            ? 'flex-row -mx-2'
-            : 'flex-col -my-2'
+        className={`flex h-full ${
+          context.orientation === 'horizontal' ? 'flex-row -mx-2' : 'flex-col'
         } ${className}`}
         {...props}
       >

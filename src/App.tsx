@@ -185,12 +185,27 @@ function App() {
       </div>
       <div className="w-[80%] mx-auto">
         <h3 className="h3">Carousel</h3>
-        <Carousel orientation="vertical">
+        <div className="py-16">
+          <Carousel orientation="vertical">
+            <CarouselContent>
+              {[0, 0, 0, 0, 0].map((_, index) => {
+                return (
+                  <CarouselItem className="basis-1/2" key={index}>
+                    <div className="border-border h-full h3 rounded-lg flex items-center justify-center border-1">
+                      {index + 1}
+                    </div>
+                  </CarouselItem>
+                );
+              })}
+            </CarouselContent>
+          </Carousel>
+        </div>
+        <Carousel orientation="horizontal">
           <CarouselContent>
             {[0, 0, 0, 0, 0].map((_, index) => {
               return (
-                <CarouselItem className="basis-full" key={index}>
-                  <div className="border-border h3 rounded-lg flex items-center justify-center border-1">
+                <CarouselItem className="basis-1/3" key={index}>
+                  <div className="border-border h3 aspect-square rounded-lg flex items-center justify-center border-1">
                     {index + 1}
                   </div>
                 </CarouselItem>
