@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState } from 'react';
 
 interface AlertDialogContextType {
   isOpen: boolean;
@@ -30,17 +30,31 @@ const AlertDialog = ({
 const AlertDialogTrigger = ({
   children,
   className,
+  asChild = false,
   ...props
-}: {
-  children: React.ReactNode;
-  className?: string;
-  props?: any;
+}: React.HTMLAttributes<HTMLButtonElement> & {
+  asChild?: boolean;
+  children: React.ReactNode | React.ReactElement<any>;
 }) => {
   const context = useContext(AlertDialogContext);
+
+  if (asChild) {
+    if (!React.isValidElement(children)) {
+      console.error(
+        'AlertDialogTrigger requires a valid ReactElement when `asChild` is true.'
+      );
+      return null;
+    }
+    return React.cloneElement(children, {
+      onClick: context.toggle,
+    });
+  }
+
   return (
     <button
       className="px-6 py-2 border-[1px] border-border hover:bg-border rounded-lg cursor-pointer p transition-colors duration-150"
       onClick={context.toggle}
+      {...props}
     >
       {children}
     </button>

@@ -28,9 +28,10 @@ const Alert = ({
             'IC TT'
             '. CT'
             `,
+          gridTemplateColumns: 'auto 1fr',
         }}
         className={
-          `w-2xl p-4 border-[1px] ${
+          `max-w-2xl p-4 border-[1px] ${
             variant === 'destructive' ? 'border-error' : 'border-border'
           } rounded-lg ` + className
         }
