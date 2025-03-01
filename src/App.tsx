@@ -33,12 +33,17 @@ import {
 import { Popover, PopoverContent, PopoverTrigger } from './ModernTheme/Popover';
 import { useState } from 'react';
 import Calendar from './ModernTheme/Calendar';
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+} from './ModernTheme/Carousel';
 
 function App() {
   const [selectedDate, setSelectedDate] = useState(new Date());
 
   return (
-    <div className="flex flex-col gap-30">
+    <div className="flex flex-col gap-30 my-30">
       <div className="w-[80%] mx-auto">
         <h3 className="h3">Accordion</h3>
         <Accordion className="w-full">
@@ -83,7 +88,7 @@ function App() {
       </div>
       <div className="w-[80%] mx-auto">
         <h3 className="h3">Alert</h3>
-        <Alert>
+        <Alert className={'mb-4'}>
           <AlertIcon>
             <AlertCircle className="w-4" />
           </AlertIcon>
@@ -132,7 +137,7 @@ function App() {
         </AlertDialog>
       </div>
       <div className="w-[80%] mx-auto">
-        <h3 className="h3">Alert Dialog</h3>
+        <h3 className="h3">Avatar</h3>
         <Avatar
           src="https://avatars.githubusercontent.com/u/181278803?v=4&size=64"
           activity="active"
@@ -179,10 +184,20 @@ function App() {
         />
       </div>
       <div className="w-[80%] mx-auto">
-        <h3 className="h3">Card</h3>
-      </div>
-      <div className="w-[80%] mx-auto">
         <h3 className="h3">Carousel</h3>
+        <Carousel orientation="vertical">
+          <CarouselContent>
+            {[0, 0, 0, 0, 0].map((_, index) => {
+              return (
+                <CarouselItem className="basis-full" key={index}>
+                  <div className="border-border h3 rounded-lg flex items-center justify-center border-1">
+                    {index + 1}
+                  </div>
+                </CarouselItem>
+              );
+            })}
+          </CarouselContent>
+        </Carousel>
       </div>
       <div className="w-[80%] mx-auto">
         <h3 className="h3">Chart</h3>
