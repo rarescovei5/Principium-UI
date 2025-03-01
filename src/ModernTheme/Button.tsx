@@ -8,8 +8,8 @@ const Button = ({
   ...props
 }: React.HTMLAttributes<HTMLButtonElement> & {
   variant?:
-    | 'normal'
-    | 'inverted'
+    | 'primary'
+    | 'secondary'
     | 'destructive'
     | 'outline'
     | 'ghost'
@@ -19,11 +19,11 @@ const Button = ({
   icon?: boolean;
 }) => {
   const variantClasses: Record<
-    'normal' | 'inverted' | 'destructive' | 'outline' | 'ghost' | 'link',
+    'primary' | 'secondary' | 'destructive' | 'outline' | 'ghost' | 'link',
     string
   > = {
-    normal: !disabled ? `bg-border hover:bg-surface ` : `bg-border/50`,
-    inverted: !disabled
+    primary: !disabled ? `bg-surface hover:bg-surface/50 ` : `bg-surface/25`,
+    secondary: !disabled
       ? `bg-white hover:bg-white/90 text-bg`
       : `bg-white/50 text-bg`,
     destructive: !disabled ? `bg-error hover:bg-error/50` : `bg-error/25`,
@@ -35,7 +35,7 @@ const Button = ({
   };
   const chosenClass = variant
     ? variantClasses[variant]
-    : variantClasses['normal'];
+    : variantClasses['primary'];
 
   return (
     <button

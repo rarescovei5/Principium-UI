@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState } from 'react';
+import { Button } from './Button';
 
 interface AlertDialogContextType {
   isOpen: boolean;
@@ -51,13 +52,9 @@ const AlertDialogTrigger = ({
   }
 
   return (
-    <button
-      className="px-6 py-2 border-[1px] border-border hover:bg-border rounded-lg cursor-pointer p transition-colors duration-150"
-      onClick={context.toggle}
-      {...props}
-    >
+    <Button variant="outline" onClick={context.toggle} {...props}>
       {children}
-    </button>
+    </Button>
   );
 };
 
