@@ -37,7 +37,7 @@ const Button = ({
     ? variantClasses[variant]
     : variantClasses['normal'];
 
-  return !asChild ? (
+  return (
     <button
       className={
         `inline-flex items-center justify-center h-10 gap-2 rounded-lg transition-colors duration-150 ${
@@ -51,8 +51,6 @@ const Button = ({
     >
       {children}
     </button>
-  ) : (
-    <></>
   );
 };
 
