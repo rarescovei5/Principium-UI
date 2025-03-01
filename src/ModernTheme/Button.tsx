@@ -1,7 +1,7 @@
 const Button = ({
   children,
   className,
-  variant,
+  variant = 'primary',
   asChild = false,
   disabled = false,
   icon = false,
@@ -33,9 +33,6 @@ const Button = ({
     ghost: !disabled ? `hover:bg-surface` : ``,
     link: !disabled ? `hover:underline` : ``,
   };
-  const chosenClass = variant
-    ? variantClasses[variant]
-    : variantClasses['primary'];
 
   return (
     <button
@@ -43,7 +40,7 @@ const Button = ({
         `inline-flex items-center justify-center h-10 gap-2 rounded-lg transition-colors duration-150 ${
           icon ? 'aspect-square' : 'p px-6 py-2 min-w-20'
         } ${disabled ? '' : 'cursor-pointer'} ` +
-        chosenClass +
+        variantClasses[variant] +
         ' ' +
         className
       }

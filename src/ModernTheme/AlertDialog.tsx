@@ -10,15 +10,7 @@ const AlertDialogContext = createContext<AlertDialogContextType>({
   toggle: () => {},
 });
 
-const AlertDialog = ({
-  children,
-  className,
-  ...props
-}: {
-  children: React.ReactNode;
-  className?: any;
-  props?: any;
-}) => {
+const AlertDialog = ({ children }: { children: React.ReactNode }) => {
   const [isOpen, setIsOpen] = useState(false);
   const toggle = () => setIsOpen((prev) => !prev);
   return (
@@ -69,7 +61,7 @@ const AlertDialogContent = ({
 }) => {
   const context = useContext(AlertDialogContext);
   return context.isOpen ? (
-    <div className="fixed inset-0 bg-bg/75 backdrop-opacity-5 bg-opacity-5 grid place-content-center">
+    <div className="fixed z-1000 inset-0 bg-bg/75 backdrop-opacity-5 bg-opacity-5 grid place-content-center">
       <div className="w-2xl bg-bg flex flex-col gap-4 border-[1px] border-border p-6 rounded-lg">
         {children}
       </div>

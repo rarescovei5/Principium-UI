@@ -10,7 +10,7 @@ const AlertContext = createContext<AlertContextType>({
 
 const Alert = ({
   children,
-  variant,
+  variant = 'normal',
   className,
   ...props
 }: {
@@ -20,7 +20,7 @@ const Alert = ({
   props?: any;
 }) => {
   return (
-    <AlertContext.Provider value={{ variant: !variant ? 'normal' : variant }}>
+    <AlertContext.Provider value={{ variant }}>
       <div
         style={{
           display: 'grid',
