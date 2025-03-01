@@ -31,8 +31,12 @@ import {
   BreadcrumbLink,
 } from './ModernTheme/Breadcrumb';
 import { Popover, PopoverContent, PopoverTrigger } from './ModernTheme/Popover';
+import { useState } from 'react';
+import Calendar from './ModernTheme/Calendar';
 
 function App() {
+  const [selectedDate, setSelectedDate] = useState(new Date());
+
   return (
     <div className="flex flex-col gap-30">
       <div className="w-[80%] mx-auto">
@@ -169,6 +173,10 @@ function App() {
       </div>
       <div className="w-[80%] mx-auto">
         <h3 className="h3">Calendar</h3>
+        <Calendar
+          selectedDate={selectedDate}
+          setSelectedDate={setSelectedDate}
+        />
       </div>
       <div className="w-[80%] mx-auto">
         <h3 className="h3">Card</h3>
