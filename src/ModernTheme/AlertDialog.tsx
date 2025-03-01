@@ -163,7 +163,7 @@ const AlertDialogAction = ({
 }) => {
   return (
     <button
-      className="px-6 py-2 rounded-lg text-bg bg-white cursor-pointer transition-colors duration-150 hover:bg-gray-100 p"
+      className="px-6 py-2 rounded-lg text-bg bg-white cursor-pointer transition-colors duration-150 hover:bg-white/90 p"
       {...props}
     >
       {children}

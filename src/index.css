@@ -19,8 +19,7 @@
   .h2,
   .h3,
   .p,
-  .small,
-  .btn {
+  .small {
     font-family: 'Inter', 'Open Sans';
   }
   .h1 {
@@ -48,11 +47,7 @@
     line-height: 16px;
     font-weight: 300;
   }
-  .btn {
-    font-size: 18px;
-    line-height: 29.1px;
-    font-weight: 600;
-  }
+
   /* ------------------------------------------------------------------------ */
   * {
     margin: 0;

@@ -38,7 +38,7 @@ const BreadcrumbLink = ({
           {children}
         </Link>
       </li>
-      <li className="flex">
+      <li>
         <svg
           className="w-2 -rotate-90"
           viewBox="0 0 8 4"
