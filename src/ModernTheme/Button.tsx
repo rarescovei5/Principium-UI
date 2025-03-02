@@ -20,10 +20,10 @@ const Button = ({
     'primary' | 'secondary' | 'destructive' | 'outline' | 'ghost' | 'link',
     string
   > = {
-    primary: !disabled ? `bg-surface hover:bg-surface/50 ` : `bg-surface/25`,
-    secondary: !disabled
+    primary: !disabled
       ? `bg-white hover:bg-white/90 text-bg`
       : `bg-white/50 text-bg`,
+    secondary: !disabled ? `bg-surface hover:bg-surface/50 ` : `bg-surface/25`,
     destructive: !disabled ? `bg-error hover:bg-error/50` : `bg-error/25`,
     outline: !disabled
       ? `border-[1px] border-border hover:bg-border`

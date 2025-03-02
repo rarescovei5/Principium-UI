@@ -172,7 +172,7 @@ function App() {
           <Button variant="ghost">Button Texet</Button>
           <Button variant="link">Button Texet</Button>
           <Button disabled>Button Texet</Button>
-          <Button icon>
+          <Button variant="ghost" icon>
             <svg
               width="8"
               height="4"
