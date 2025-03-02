@@ -54,11 +54,7 @@ const DialogContent = ({
   children,
   className,
   ...props
-}: {
-  children: React.ReactNode;
-  className?: any;
-  props?: any;
-}) => {
+}: React.HTMLAttributes<HTMLDivElement>) => {
   const context = useContext(DialogContext);
   useEffect(() => {
     const handleOutside = (e: MouseEvent) => {
@@ -110,11 +106,7 @@ const DialogHeader = ({
   children,
   className,
   ...props
-}: {
-  children: React.ReactNode;
-  className?: any;
-  props?: any;
-}) => {
+}: React.HTMLAttributes<HTMLDivElement>) => {
   return (
     <div className="flex flex-col gap-2" {...props}>
       {children}
@@ -125,11 +117,7 @@ const DialogFooter = ({
   children,
   className,
   ...props
-}: {
-  children: React.ReactNode;
-  className?: any;
-  props?: any;
-}) => {
+}: React.HTMLAttributes<HTMLDivElement>) => {
   return (
     <div className="self-end flex gap-4" {...props}>
       {children}
@@ -141,11 +129,7 @@ const DialogTitle = ({
   children,
   className,
   ...props
-}: {
-  children: React.ReactNode;
-  className?: any;
-  props?: any;
-}) => {
+}: React.HTMLAttributes<HTMLDivElement>) => {
   return (
     <div className={'h3 ' + className} {...props}>
       {children}
@@ -156,11 +140,7 @@ const DialogDescription = ({
   children,
   className,
   ...props
-}: {
-  children: React.ReactNode;
-  className?: any;
-  props?: any;
-}) => {
+}: React.HTMLAttributes<HTMLDivElement>) => {
   return (
     <div className={'p text-subtext ' + className} {...props}>
       {children}
@@ -173,12 +153,7 @@ const DialogClose = ({
   className,
   onClick,
   ...props
-}: {
-  children: React.ReactNode;
-  onClick?: any;
-  className?: any;
-  props?: any;
-}) => {
+}: React.ButtonHTMLAttributes<HTMLButtonElement>) => {
   const context = useContext(DialogContext);
   return (
     <button
@@ -194,11 +169,7 @@ const DialogAction = ({
   children,
   className,
   ...props
-}: {
-  children: React.ReactNode;
-  className?: any;
-  props?: any;
-}) => {
+}: React.ButtonHTMLAttributes<HTMLButtonElement>) => {
   return (
     <button
       className="px-6 py-2 rounded-lg text-bg bg-white cursor-pointer transition-colors duration-150 hover:bg-white/90 p"

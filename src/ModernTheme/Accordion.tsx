@@ -14,11 +14,7 @@ const AccordionItem = ({
   children,
   className,
   ...props
-}: {
-  children: React.ReactNode;
-  className?: string;
-  props?: any;
-}) => {
+}: React.HtmlHTMLAttributes<HTMLDivElement>) => {
   const [isOpen, setIsOpen] = useState(false);
   const toggle = () => setIsOpen((prev) => !prev);
 
@@ -36,12 +32,7 @@ const AccordionTrigger = ({
   className,
   onClick,
   ...props
-}: {
-  children: React.ReactNode;
-  className?: any;
-  onClick?: any;
-  props?: any;
-}) => {
+}: React.ButtonHTMLAttributes<HTMLButtonElement>) => {
   const context = useContext(AccordionContext);
 
   return (
@@ -73,11 +64,7 @@ const AccordionContent = ({
   className,
   children,
   ...props
-}: {
-  children: React.ReactNode;
-  props?: any;
-  className?: string;
-}) => {
+}: React.HTMLAttributes<HTMLDivElement>) => {
   const context = useContext(AccordionContext);
 
   return (
