@@ -19,9 +19,11 @@ const Carousel = ({
   children,
   orientation = 'horizontal',
   className,
+  autoPlay = 0,
   ...props
 }: React.HTMLAttributes<any> & {
   orientation?: 'horizontal' | 'vertical';
+  autoPlay?: number;
 }) => {
   const [index, setIndex] = useState(0);
   const [maxIndex, setMaxIndex] = useState(0);
@@ -39,6 +41,21 @@ const Carousel = ({
       return newIndex;
     });
   };
+  useEffect(() => {
+    if (!autoPlay) return;
+
+    const handleAutoPlay = () => {
+      if (index === maxIndex) {
+        scroll(-maxIndex);
+      } else {
+        scroll(1);
+      }
+    };
+
+    const interval = setInterval(handleAutoPlay, autoPlay);
+
+    return () => clearInterval(interval);
+  }, [autoPlay, index, maxIndex, scroll]);
 
   return (
     <CarouselContext.Provider value={{ orientation, index, setMaxIndex }}>
@@ -77,10 +94,10 @@ const NavButton = ({
     direction === 'prev'
       ? isHorizontal
         ? 'right-[calc(100%+1rem)] top-1/2 -translate-y-1/2'
-        : 'bottom-[calc(100%+0.5rem)] left-1/2 -translate-x-1/2'
+        : 'bottom-[calc(100%+1rem)] left-1/2 -translate-x-1/2'
       : isHorizontal
       ? 'left-[calc(100%+1rem)] top-1/2 -translate-y-1/2'
-      : 'top-[calc(100%+0.5rem)] left-1/2 -translate-x-1/2';
+      : 'top-[calc(100%+1rem)] left-1/2 -translate-x-1/2';
   const rotation =
     direction === 'prev'
       ? isHorizontal
@@ -139,10 +156,9 @@ const CarouselContent = ({
           ? containerRef.current.children[0]?.getBoundingClientRect().width || 1
           : containerRef.current.children[0]?.getBoundingClientRect().height ||
             1;
-      console.log(carouselSize, itemSize);
 
       const visibleItems = Math.round(carouselSize / itemSize);
-      console.log(visibleItems);
+
       const maxIndex = Math.max(itemsCount - visibleItems, 0);
       context.setMaxIndex(maxIndex);
     }
@@ -152,8 +168,10 @@ const CarouselContent = ({
     <div ref={carouselRef} className="overflow-hidden flex-1">
       <div
         ref={containerRef}
-        className={`flex h-full ${
-          context.orientation === 'horizontal' ? 'flex-row -mx-2' : 'flex-col'
+        className={`flex ${
+          context.orientation === 'horizontal'
+            ? 'flex-row -mx-2'
+            : 'flex-col -my-2'
         } ${className}`}
         {...props}
       >

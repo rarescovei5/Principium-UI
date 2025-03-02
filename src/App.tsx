@@ -186,8 +186,8 @@ function App() {
       <div className="w-[80%] mx-auto">
         <h3 className="h3">Carousel</h3>
         <div className="py-16">
-          <Carousel orientation="vertical">
-            <CarouselContent>
+          <Carousel autoPlay={2000} orientation="vertical">
+            <CarouselContent className="h-100">
               {[0, 0, 0, 0, 0].map((_, index) => {
                 return (
                   <CarouselItem className="basis-1/2" key={index}>
@@ -200,7 +200,7 @@ function App() {
             </CarouselContent>
           </Carousel>
         </div>
-        <Carousel orientation="horizontal">
+        <Carousel autoPlay={2000} orientation="horizontal">
           <CarouselContent>
             {[0, 0, 0, 0, 0].map((_, index) => {
               return (
