@@ -38,9 +38,11 @@ import {
   CarouselContent,
   CarouselItem,
 } from './ModernTheme/Carousel';
+import Checkbox from './ModernTheme/CheckBox';
 
 function App() {
   const [selectedDate, setSelectedDate] = useState(new Date());
+  const [checked, setChecked] = useState(false);
 
   return (
     <div className="flex flex-col gap-30 my-30">
@@ -219,6 +221,15 @@ function App() {
       </div>
       <div className="w-[80%] mx-auto">
         <h3 className="h3">Checkbox</h3>
+        <div className="flex items-center gap-2">
+          <Checkbox
+            checked={checked}
+            toggleChecked={() => {
+              setChecked((prev) => !prev);
+            }}
+          />{' '}
+          <p className="p">My checkbox</p>
+        </div>
       </div>
       <div className="w-[80%] mx-auto">
         <h3 className="h3">Collapsible</h3>
