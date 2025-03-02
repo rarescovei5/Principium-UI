@@ -38,8 +38,18 @@ import {
   CarouselContent,
   CarouselItem,
 } from './ModernTheme/Carousel';
-import Checkbox from './ModernTheme/CheckBox';
-
+import { Checkbox } from './ModernTheme/Checkbox';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from './ModernTheme/Dialog';
+import { Label } from './ModernTheme/Label';
+import { Input } from './ModernTheme/Input';
 function App() {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [checked, setChecked] = useState(false);
@@ -227,15 +237,12 @@ function App() {
             toggleChecked={() => {
               setChecked((prev) => !prev);
             }}
-          />{' '}
+          />
           <p className="p">My checkbox</p>
         </div>
       </div>
       <div className="w-[80%] mx-auto">
         <h3 className="h3">Collapsible</h3>
-      </div>
-      <div className="w-[80%] mx-auto">
-        <h3 className="h3">ComboBox</h3>
       </div>
       <div className="w-[80%] mx-auto">
         <h3 className="h3">Command</h3>
@@ -251,6 +258,40 @@ function App() {
       </div>
       <div className="w-[80%] mx-auto">
         <h3 className="h3">Dialog</h3>
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button variant="outline">Edit Profile</Button>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-[425px]">
+            <DialogHeader>
+              <DialogTitle>Edit profile</DialogTitle>
+              <DialogDescription>
+                Make changes to your profile here. Click save when you're done.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="grid gap-4 py-4">
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="name" className="text-right">
+                  Name
+                </Label>
+                <Input id="name" defaultValue="Rares" className="col-span-3" />
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="username" className="text-right">
+                  Username
+                </Label>
+                <Input
+                  id="username"
+                  defaultValue="Rareseanu"
+                  className="col-span-3"
+                />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button type="submit">Save changes</Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
       <div className="w-[80%] mx-auto">
         <h3 className="h3">Drawer</h3>
@@ -266,12 +307,14 @@ function App() {
       </div>
       <div className="w-[80%] mx-auto">
         <h3 className="h3">Input</h3>
+        <Input id="username" defaultValue="Rareseanu" className="col-span-3" />
       </div>
       <div className="w-[80%] mx-auto">
         <h3 className="h3">InputOTP</h3>
       </div>
       <div className="w-[80%] mx-auto">
         <h3 className="h3">Label</h3>
+        <Label htmlFor="username">Label For Input</Label>
       </div>
       <div className="w-[80%] mx-auto">
         <h3 className="h3">MenuBar</h3>

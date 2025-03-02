@@ -2,11 +2,10 @@ const Button = ({
   children,
   className,
   variant = 'primary',
-  asChild = false,
   disabled = false,
   icon = false,
   ...props
-}: React.HTMLAttributes<HTMLButtonElement> & {
+}: React.ButtonHTMLAttributes<HTMLButtonElement> & {
   variant?:
     | 'primary'
     | 'secondary'
@@ -14,7 +13,6 @@ const Button = ({
     | 'outline'
     | 'ghost'
     | 'link';
-  asChild?: boolean;
   disabled?: boolean;
   icon?: boolean;
 }) => {
