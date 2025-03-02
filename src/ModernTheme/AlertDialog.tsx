@@ -62,7 +62,7 @@ const AlertDialogContent = ({
   const context = useContext(AlertDialogContext);
   return context.isOpen ? (
     <div className="fixed z-1000 inset-0 bg-bg/75 backdrop-opacity-5 bg-opacity-5 grid place-content-center">
-      <div className="w-2xl bg-bg flex flex-col gap-4 border-[1px] border-border p-6 rounded-lg">
+      <div className="w-2xl bg-bg flex flex-col gap-4 border border-border p-6 rounded-lg">
         {children}
       </div>
     </div>
@@ -147,7 +147,7 @@ const AlertDialogCancel = ({
   const context = useContext(AlertDialogContext);
   return (
     <button
-      className="px-6 py-2 rounded-lg border-[1px] border-border hover:bg-border cursor-pointer transition-colors duration-150 p"
+      className="px-6 py-2 rounded-lg border border-border hover:bg-border cursor-pointer transition-colors duration-150 p"
       onClick={context.toggle}
       {...props}
     >

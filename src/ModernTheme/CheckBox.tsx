@@ -12,10 +12,10 @@ const Checkbox = ({
     <button
       className={`w-5 h-5 flex items-center justify-center transition-colors duration-150 rounded-lg ${
         disabled
-          ? 'cursor-not-allowed border-border border-[1px]'
+          ? 'cursor-not-allowed border-border border'
           : checked
-          ? 'bg-white border-white border-[1px] cursor-pointer'
-          : 'bg-transparent border-white border-[1px] cursor-pointer'
+          ? 'bg-white border-white border cursor-pointer'
+          : 'bg-transparent border-white border cursor-pointer'
       }`}
       onClick={toggleChecked}
       {...props}

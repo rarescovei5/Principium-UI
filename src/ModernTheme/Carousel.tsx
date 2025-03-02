@@ -55,7 +55,7 @@ const Carousel = ({
     const interval = setInterval(handleAutoPlay, autoPlay);
 
     return () => clearInterval(interval);
-  }, [autoPlay, index, maxIndex, scroll]);
+  }, [autoPlay, index, maxIndex]);
 
   return (
     <CarouselContext.Provider value={{ orientation, index, setMaxIndex }}>

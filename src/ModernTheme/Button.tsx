@@ -26,8 +26,8 @@ const Button = ({
     secondary: !disabled ? `bg-surface hover:bg-surface/50 ` : `bg-surface/25`,
     destructive: !disabled ? `bg-error hover:bg-error/50` : `bg-error/25`,
     outline: !disabled
-      ? `border-[1px] border-border hover:bg-border`
-      : `border-[1px] border-border/50`,
+      ? `border border-border hover:bg-border`
+      : `border border-border/50`,
     ghost: !disabled ? `hover:bg-surface` : ``,
     link: !disabled ? `hover:underline` : ``,
   };

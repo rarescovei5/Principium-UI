@@ -45,11 +45,11 @@ const Calendar = ({
   };
 
   return (
-    <div className="inline-flex flex-col h-full text-white border-[1px] border-border rounded-lg p-4">
+    <div className="inline-flex flex-col h-full text-white border border-border rounded-lg p-4">
       {/* Month/Year Title */}
       <div className="flex justify-between items-center mb-4">
         <button
-          className="w-10 h-10 border-[1px] hover:bg-border transition-colors duration-150 border-border rounded-lg flex items-center justify-center cursor-pointer"
+          className="w-10 h-10 border hover:bg-border transition-colors duration-150 border-border rounded-lg flex items-center justify-center cursor-pointer"
           onClick={goToPrevMonth}
         >
           <svg
@@ -69,7 +69,7 @@ const Calendar = ({
           {currentDate.getFullYear()}
         </div>
         <button
-          className="w-10 h-10 border-[1px] hover:bg-border transition-colors duration-150 border-border rounded-lg flex items-center justify-center cursor-pointer"
+          className="w-10 h-10 border hover:bg-border transition-colors duration-150 border-border rounded-lg flex items-center justify-center cursor-pointer"
           onClick={goToNextMonth}
         >
           <svg

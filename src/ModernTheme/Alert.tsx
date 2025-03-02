@@ -31,7 +31,7 @@ const Alert = ({
           gridTemplateColumns: 'auto 1fr',
         }}
         className={
-          `max-w-2xl p-4 border-[1px] ${
+          `max-w-2xl p-4 border ${
             variant === 'destructive' ? 'border-error' : 'border-border'
           } rounded-lg ` + className
         }

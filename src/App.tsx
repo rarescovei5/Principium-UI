@@ -256,7 +256,7 @@ function App() {
       </div>
       <div className="w-[80%] mx-auto">
         <h3 className="h3">Command</h3>
-        <Command className=" border border-border shadow-md w-100">
+        <Command className="border border-border shadow-md w-100">
           <CommandInput placeholder="Type a command or search..." />
           <CommandList>
             <CommandEmpty>No Results Found</CommandEmpty>
