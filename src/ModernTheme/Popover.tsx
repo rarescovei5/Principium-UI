@@ -52,15 +52,21 @@ const PopoverTrigger = ({
 const PopoverContent = ({
   children,
   className,
+  side = 'bottom',
   ...props
-}: React.HTMLAttributes<HTMLDivElement>) => {
+}: React.HTMLAttributes<HTMLDivElement> & {
+  side?: 'top' | 'right' | 'bottom' | 'left';
+}) => {
   const context = useContext(PopoverContext);
+  const sideClasses: Record<typeof side, string> = {
+    top: 'bottom-[calc(100%+0.5rem)] left-[50%] -translate-x-[50%]',
+    right: 'left-[calc(100%+0.5rem)] top-[50%] -translate-y-[50%]',
+    bottom: 'top-[calc(100%+0.5rem)] left-[50%] -translate-x-[50%]',
+    left: 'right-[calc(100%+0.5rem)] top-[50%] -translate-y-[50%]',
+  };
   return context.isOpen ? (
     <div
-      className={
-        'absolute top-[calc(100%+0.5rem)] left-[50%] -translate-x-[50%] ' +
-        className
-      }
+      className={'absolute ' + sideClasses[side] + ' ' + className}
       {...props}
     >
       {children}

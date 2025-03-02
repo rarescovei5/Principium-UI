@@ -288,7 +288,7 @@ function App() {
           <PopoverTrigger asChild>
             <Button variant="outline">Open</Button>
           </PopoverTrigger>
-          <PopoverContent>Content goes here</PopoverContent>
+          <PopoverContent side="bottom">Content goes here</PopoverContent>
         </Popover>
       </div>
       <div className="w-[80%] mx-auto">
