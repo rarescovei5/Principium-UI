@@ -64,6 +64,10 @@ function App() {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [checked, setChecked] = useState(false);
 
+  // Yes, I know that I currently have undefined classes since I am not checking before adding if they exists in the components
+  // I plan to make a utility function similar to shadcn's that just combines the classes and use that everywhere.
+  // That will come in later versions I guess
+
   return (
     <div className="flex flex-col gap-30 my-30">
       <div className="w-[80%] mx-auto">
