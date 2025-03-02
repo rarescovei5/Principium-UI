@@ -259,7 +259,7 @@ function App() {
         <Command className=" border border-border shadow-md w-100">
           <CommandInput placeholder="Type a command or search..." />
           <CommandList>
-            {/* <CommandEmpty>No results found.</CommandEmpty> */}
+            <CommandEmpty>No Results Found</CommandEmpty>
             <CommandGroup heading="Suggestions">
               <CommandItem>
                 <span>Calendar</span>

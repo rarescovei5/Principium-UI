@@ -5,6 +5,8 @@ import React, {
   useState,
   ReactNode,
   ReactElement,
+  FC,
+  useEffect,
 } from 'react';
 import { Dialog, DialogContent } from './Dialog';
 
@@ -15,6 +17,8 @@ import { Dialog, DialogContent } from './Dialog';
 type CommandContextType = {
   selectedIndex: number | null;
   setSelectedIndex: React.Dispatch<SetStateAction<number | null>>;
+  searchQuery: string;
+  setSearchQuery: React.Dispatch<SetStateAction<string>>;
 };
 
 const CommandContext = createContext<CommandContextType | null>(null);
@@ -63,14 +67,19 @@ interface CommandListProps extends React.HTMLAttributes<HTMLDivElement> {
 // COMPONENTS
 // ────────────────────────────────────────────────────────────────
 
-const Command: React.FC<CommandProps> = ({
-  className = '',
-  children,
-  ...props
-}) => {
+const Command: FC<CommandProps> = ({ className = '', children, ...props }) => {
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
+
   return (
-    <CommandContext.Provider value={{ selectedIndex, setSelectedIndex }}>
+    <CommandContext.Provider
+      value={{
+        selectedIndex,
+        setSelectedIndex,
+        searchQuery,
+        setSearchQuery,
+      }}
+    >
       <div className={`rounded-lg ${className}`} {...props}>
         {children}
       </div>
@@ -78,10 +87,7 @@ const Command: React.FC<CommandProps> = ({
   );
 };
 
-const CommandDialog: React.FC<CommandDialogProps> = ({
-  children,
-  ...props
-}) => {
+const CommandDialog: FC<CommandDialogProps> = ({ children, ...props }) => {
   return (
     <Dialog {...props}>
       <DialogContent>
@@ -91,19 +97,17 @@ const CommandDialog: React.FC<CommandDialogProps> = ({
   );
 };
 
-const CommandEmpty: React.FC<CommandEmptyProps> = ({
-  className = '',
-  children,
-  ...props
-}) => {
-  return (
-    <div className={className} {...props}>
-      {children}
-    </div>
-  );
+const CommandEmpty: FC<CommandEmptyProps> = ({ children }) => {
+  const context = useContext(CommandContext);
+  if (!context)
+    throw new Error(
+      'CommandEmpty must be used inside of a Command or CommandDialog'
+    );
+
+  return <div className="text-center p-4">{children}</div>;
 };
 
-const CommandGroup: React.FC<CommandGroupProps> = ({
+const CommandGroup: FC<CommandGroupProps> = ({
   className = '',
   heading,
   children,
@@ -117,10 +121,16 @@ const CommandGroup: React.FC<CommandGroupProps> = ({
   );
 };
 
-const CommandInput: React.FC<CommandInputProps> = ({
-  className = '',
-  ...props
-}) => {
+const CommandInput: FC<CommandInputProps> = ({ className = '', ...props }) => {
+  const context = useContext(CommandContext);
+  if (!context) throw new Error('CommandInput must be used within a Command');
+  const { searchQuery, setSearchQuery } = context;
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value);
+    if (props.onChange) props.onChange(e);
+  };
+
   return (
     <div className="flex px-3 py-3 items-center gap-2 border-b border-b-border">
       <svg
@@ -139,13 +149,15 @@ const CommandInput: React.FC<CommandInputProps> = ({
       <input
         className={`w-full p outline-0 ${className}`}
         type="text"
+        value={searchQuery}
+        onChange={handleChange}
         {...props}
       />
     </div>
   );
 };
 
-const CommandItem: React.FC<CommandItemProps> = ({
+const CommandItem: FC<CommandItemProps> = ({
   className = '',
   children,
   disabled,
@@ -160,7 +172,6 @@ const CommandItem: React.FC<CommandItemProps> = ({
   }
   const { selectedIndex, setSelectedIndex } = context;
   const isSelected = selectedIndex === index;
-
   return (
     <div
       className={`mx-1 px-3 py-2 select-none rounded-lg flex items-center ${
@@ -179,16 +190,21 @@ const CommandItem: React.FC<CommandItemProps> = ({
 };
 CommandItem.displayName = 'CommandItem';
 
-const CommandSeparator: React.FC<CommandSeparatorProps> = ({
+const CommandSeparator: FC<CommandSeparatorProps> = ({
   className = '',
   ...props
 }) => {
+  const context = useContext(CommandContext);
+  if (!context)
+    throw new Error(
+      'CommandSeparator has to be used inside of a Command or CommandDialog'
+    );
   return (
     <hr className={`min-h-[1px] h-[1px] bg-border ${className}`} {...props} />
   );
 };
 
-const CommandShortcut: React.FC<CommandShortcutProps> = ({
+const CommandShortcut: FC<CommandShortcutProps> = ({
   className = '',
   children,
   ...props
@@ -201,26 +217,67 @@ const CommandShortcut: React.FC<CommandShortcutProps> = ({
 };
 
 // ────────────────────────────────────────────────────────────────
-// AUTO-INDEXING HELPER FOR CommandList
+// SEARCH HELPERS
 // ────────────────────────────────────────────────────────────────
 
 /**
- * Recursively traverses the React node tree and injects an `index` prop
- * into every CommandItem element.
+ * Recursively extract text from a React node.
  */
+const getTextFromReactNode = (node: ReactNode): string => {
+  if (typeof node === 'string' || typeof node === 'number') {
+    return node.toString();
+  } else if (React.isValidElement<{ children?: ReactNode }>(node)) {
+    return getTextFromReactNode(node.props.children);
+  } else if (Array.isArray(node)) {
+    return node.map(getTextFromReactNode).join(' ');
+  }
+  return '';
+};
+
+/**
+ * Recursively filter command children by search query.
+ * For CommandGroup, it preserves the group if any child matches.
+ */
+const filterCommands = (children: ReactNode, query: string): ReactNode => {
+  return React.Children.map(children, (child) => {
+    if (!React.isValidElement(child)) return child;
+    const element = child as ReactElement<any>;
+
+    if ((element as any).type.name === 'CommandSeparator') {
+      return null;
+    }
+
+    if ((element as any).type.name === 'CommandGroup') {
+      const filteredChildren = filterCommands(element.props.children, query);
+      if (!filteredChildren || React.Children.count(filteredChildren) === 0)
+        return null;
+      return React.cloneElement(element, { children: filteredChildren });
+    }
+
+    if ((element as any).type.name === 'CommandItem') {
+      const text = getTextFromReactNode(element.props.children);
+      return text.toLowerCase().includes(query.toLowerCase()) ? element : null;
+    }
+
+    return element;
+  });
+};
+
+// ────────────────────────────────────────────────────────────────
+// AUTO-INDEXING HELPER
+// ────────────────────────────────────────────────────────────────
+
 const injectIndex = (
   child: ReactNode,
   counter: { current: number }
 ): ReactNode => {
   if (React.isValidElement(child)) {
     const element = child as ReactElement<any>;
-    // If the element is a CommandItem, inject the current index.
-    if ((element.type as any).displayName === 'CommandItem') {
+    if ((element as any).type.name === 'CommandItem') {
       const newChild = React.cloneElement(element, { index: counter.current });
       counter.current++;
       return newChild;
     }
-    // If the element has children, process them recursively.
     if (element.props && element.props.children) {
       const newChildren = React.Children.map(
         element.props.children,
@@ -232,18 +289,54 @@ const injectIndex = (
   return child;
 };
 
-const CommandList: React.FC<CommandListProps> = ({
+// ────────────────────────────────────────────────────────────────
+// COMMAND LIST (FILTERING & INDEXING)
+// ────────────────────────────────────────────────────────────────
+
+const CommandList: FC<CommandListProps> = ({
   className = '',
   children,
   ...props
 }) => {
+  const context = useContext(CommandContext);
+  if (!context)
+    throw new Error(
+      'CommandList must be used inside of a Command or CommandDialog'
+    );
+
+  const query = context?.searchQuery || '';
+
+  // Separate `CommandEmpty` from other children
+  let commandEmpty: ReactNode | null = null;
+  const validChildren: ReactNode[] = [];
+
+  React.Children.forEach(children, (child) => {
+    if (
+      React.isValidElement(child) &&
+      (child as any).type.name === 'CommandEmpty'
+    ) {
+      commandEmpty = child; // Store CommandEmpty for later
+    } else {
+      validChildren.push(child); // Store valid children
+    }
+  });
+
+  // Filter items based on search query
+  const filteredChildren = query.trim()
+    ? filterCommands(validChildren, query)
+    : validChildren;
+
+  // Inject indexes for selection behavior
   const counter = { current: 0 };
-  const childrenWithIndex = React.Children.map(children, (child) =>
+  const childrenWithIndex = React.Children.map(filteredChildren, (child) =>
     injectIndex(child, counter)
   );
+
   return (
     <div className={className} {...props}>
-      {childrenWithIndex}
+      {React.Children.count(childrenWithIndex) > 0
+        ? childrenWithIndex
+        : commandEmpty}
     </div>
   );
 };
@@ -255,8 +348,8 @@ const CommandList: React.FC<CommandListProps> = ({
 export {
   Command,
   CommandDialog,
-  CommandEmpty,
   CommandGroup,
+  CommandEmpty,
   CommandInput,
   CommandItem,
   CommandSeparator,
