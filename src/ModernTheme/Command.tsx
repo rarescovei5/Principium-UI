@@ -33,6 +33,8 @@ interface CommandProps extends React.HTMLAttributes<HTMLDivElement> {
 
 interface CommandDialogProps extends React.HTMLAttributes<HTMLDivElement> {
   children: ReactNode;
+  open: boolean;
+  setOpen: React.Dispatch<SetStateAction<boolean>>;
 }
 
 interface CommandEmptyProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -87,11 +89,31 @@ const Command: FC<CommandProps> = ({ className = '', children, ...props }) => {
   );
 };
 
-const CommandDialog: FC<CommandDialogProps> = ({ children, ...props }) => {
+const CommandDialog: FC<CommandDialogProps> = ({
+  children,
+  className,
+  open,
+  setOpen,
+  ...props
+}) => {
+  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
+
   return (
-    <Dialog {...props}>
+    <Dialog open={open} toggleOpen={() => setOpen((prev) => !prev)} {...props}>
       <DialogContent>
-        <Command>{children}</Command>
+        <CommandContext.Provider
+          value={{
+            selectedIndex,
+            setSelectedIndex,
+            searchQuery,
+            setSearchQuery,
+          }}
+        >
+          <div className={`rounded-lg ${className}`} {...props}>
+            {children}
+          </div>
+        </CommandContext.Provider>
       </DialogContent>
     </Dialog>
   );

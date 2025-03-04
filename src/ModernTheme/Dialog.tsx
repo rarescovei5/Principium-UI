@@ -1,4 +1,10 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, {
+  createContext,
+  SetStateAction,
+  useContext,
+  useEffect,
+  useState,
+} from 'react';
 import { Button } from './Button';
 
 interface DialogContextType {
@@ -10,13 +16,23 @@ const DialogContext = createContext<DialogContextType>({
   toggle: () => {},
 });
 
-const Dialog = ({ children }: { children: React.ReactNode }) => {
+const Dialog = ({
+  children,
+  open,
+  toggleOpen,
+}: {
+  children: React.ReactNode;
+  open?: boolean;
+  toggleOpen?: () => void;
+}) => {
   const [isOpen, setIsOpen] = useState(false);
   const toggle = () => setIsOpen((prev) => !prev);
+
+  const value = !(open && toggleOpen)
+    ? { isOpen, toggle }
+    : { isOpen: open, toggle: toggleOpen };
   return (
-    <DialogContext.Provider value={{ isOpen, toggle }}>
-      {children}
-    </DialogContext.Provider>
+    <DialogContext.Provider value={value}>{children}</DialogContext.Provider>
   );
 };
 
@@ -75,11 +91,14 @@ const DialogContent = ({
   return context.isOpen ? (
     <div className="fixed z-1000 inset-0 bg-bg/75 backdrop-opacity-5 bg-opacity-5 grid place-content-center">
       <div
-        className="w-2xl relative bg-bg flex flex-col gap-4 border border-border p-6 rounded-lg"
+        className={
+          'w-2xl relative bg-bg flex flex-col gap-4 border border-border rounded-lg ' +
+          className
+        }
         id="Dialog-Content"
       >
         <button
-          className="flex items-center justify-center w-6 h-6 absolute top-6 right-6 cursor-pointer rounded-lg hover:bg-surface"
+          className="flex items-center justify-center w-6 h-6 absolute top-3 right-3 cursor-pointer rounded-lg hover:bg-surface"
           onClick={context.toggle}
         >
           <svg

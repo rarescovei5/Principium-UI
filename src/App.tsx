@@ -31,7 +31,7 @@ import {
   BreadcrumbLink,
 } from './ModernTheme/Breadcrumb';
 import { Popover, PopoverContent, PopoverTrigger } from './ModernTheme/Popover';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Calendar from './ModernTheme/Calendar';
 import {
   Carousel,
@@ -52,6 +52,7 @@ import { Label } from './ModernTheme/Label';
 import { Input } from './ModernTheme/Input';
 import {
   Command,
+  CommandDialog,
   CommandEmpty,
   CommandGroup,
   CommandInput,
@@ -63,6 +64,19 @@ import {
 function App() {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [checked, setChecked] = useState(false);
+  const [openCommandDialog, setOpenCommandDialog] = useState(false);
+
+  useEffect(() => {
+    const handleCtrlK = (e: KeyboardEvent) => {
+      if (e.key === 'k' && e.ctrlKey) {
+        setOpenCommandDialog((prev) => !prev);
+      }
+    };
+    window.addEventListener('keydown', handleCtrlK);
+    return () => {
+      window.removeEventListener('keydown', handleCtrlK);
+    };
+  }, []);
 
   // Yes, I know that I currently have undefined classes since I am not checking before adding if they exists in the components
   // I plan to make a utility function similar to shadcn's that just combines the classes and use that everywhere.
@@ -292,6 +306,38 @@ function App() {
             </CommandGroup>
           </CommandList>
         </Command>
+        <CommandDialog open={openCommandDialog} setOpen={setOpenCommandDialog}>
+          <CommandInput placeholder="Type a command or search..." />
+          <CommandList>
+            <CommandEmpty>No results found.</CommandEmpty>
+            <CommandGroup heading="Suggestions">
+              <CommandItem>
+                <span>Calendar</span>
+              </CommandItem>
+              <CommandItem>
+                <span>Search Emoji</span>
+              </CommandItem>
+              <CommandItem>
+                <span>Calculator</span>
+              </CommandItem>
+            </CommandGroup>
+            <CommandSeparator />
+            <CommandGroup heading="Settings">
+              <CommandItem>
+                <span>Profile</span>
+                <CommandShortcut>⌘P</CommandShortcut>
+              </CommandItem>
+              <CommandItem>
+                <span>Billing</span>
+                <CommandShortcut>⌘B</CommandShortcut>
+              </CommandItem>
+              <CommandItem>
+                <span>Settings</span>
+                <CommandShortcut>⌘S</CommandShortcut>
+              </CommandItem>
+            </CommandGroup>
+          </CommandList>
+        </CommandDialog>
       </div>
       <div className="w-[80%] mx-auto">
         <h3 className="h3">Context Menu</h3>
@@ -308,7 +354,7 @@ function App() {
           <DialogTrigger asChild>
             <Button variant="outline">Edit Profile</Button>
           </DialogTrigger>
-          <DialogContent className="sm:max-w-[425px]">
+          <DialogContent className="sm:max-w-[425px] p-6">
             <DialogHeader>
               <DialogTitle>Edit profile</DialogTitle>
               <DialogDescription>
