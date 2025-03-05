@@ -88,6 +88,7 @@ import {
   ToastTrigger,
 } from './ModernTheme/Toast';
 import { Toggle } from './ModernTheme/Toggle';
+import { Switch } from './ModernTheme/Switch';
 function App() {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [checked, setChecked] = useState(false);
@@ -543,6 +544,15 @@ function App() {
       </div>
       <div className="w-[80%] mx-auto">
         <h3 className="h3">Switch</h3>
+        <div className="flex gap-2 items-center">
+          <Switch
+            isSelected={isSelected}
+            toggle={() => {
+              setIsSelected((prev) => !prev);
+            }}
+          />
+          <Label>Airplane Mode</Label>
+        </div>
       </div>
       <div className="w-[80%] mx-auto">
         <h3 className="h3">Table</h3>
@@ -566,7 +576,6 @@ function App() {
           </ToastContent>
         </Toast>
       </div>
-
       <div className="w-[80%] mx-auto">
         <h3 className="h3">Toggle</h3>
         <Toggle
