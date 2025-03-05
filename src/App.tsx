@@ -61,6 +61,11 @@ import {
   CommandSeparator,
   CommandShortcut,
 } from './ModernTheme/Command';
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuTrigger,
+} from './ModernTheme/ContextMenu';
 function App() {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [checked, setChecked] = useState(false);
@@ -341,6 +346,18 @@ function App() {
       </div>
       <div className="w-[80%] mx-auto">
         <h3 className="h3">Context Menu</h3>
+        <ContextMenu>
+          <ContextMenuTrigger className="w-60 aspect-square border border-border rounded-lg grid place-content-center">
+            Right Click Here
+          </ContextMenuTrigger>
+          <ContextMenuContent>
+            <Calendar
+              className="w-80"
+              selectedDate={selectedDate}
+              setSelectedDate={setSelectedDate}
+            />
+          </ContextMenuContent>
+        </ContextMenu>
       </div>
       <div className="w-[80%] mx-auto">
         <h3 className="h3">Data Table</h3>
