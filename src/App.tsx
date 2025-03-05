@@ -78,6 +78,15 @@ import {
 } from './ModernTheme/HoverCard';
 import { Skeleton } from './ModernTheme/Skeleton';
 import { Progress } from './ModernTheme/Progress';
+import { Tooltip, TooltipContent, TooltipTrigger } from './ModernTheme/Tooltip';
+import {
+  Toast,
+  ToastAction,
+  ToastContent,
+  ToastDescription,
+  ToastTitle,
+  ToastTrigger,
+} from './ModernTheme/Toast';
 function App() {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [checked, setChecked] = useState(false);
@@ -519,8 +528,8 @@ function App() {
         <div className="flex items-center space-x-4">
           <Skeleton className="h-12 w-12 rounded-full" />
           <div className="space-y-2">
-            <Skeleton className="h-4 w-[250px]" />
-            <Skeleton className="h-4 w-[200px]" />
+            <Skeleton className="h-4 w-[250px] rounded-full" />
+            <Skeleton className="h-4 w-[200px] rounded-full" />
           </div>
         </div>
       </div>
@@ -544,6 +553,16 @@ function App() {
       </div>
       <div className="w-[80%] mx-auto">
         <h3 className="h3">Toast</h3>
+        <Toast>
+          <ToastTrigger>Plan</ToastTrigger>
+          <ToastContent>
+            <ToastTitle>Scheduled: Catch up </ToastTitle>
+            <ToastDescription>
+              Friday, February 10, 2023 at 5:57 PM
+            </ToastDescription>
+            <ToastAction>Undo</ToastAction>
+          </ToastContent>
+        </Toast>
       </div>
       <div className="w-[80%] mx-auto">
         <h3 className="h3">Toggle Group</h3>
@@ -553,6 +572,14 @@ function App() {
       </div>
       <div className="w-[80%] mx-auto">
         <h3 className="h3">Tooltip</h3>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button variant="outline">Button</Button>
+          </TooltipTrigger>
+          <TooltipContent className="text-nowrap">
+            Add to library
+          </TooltipContent>
+        </Tooltip>
       </div>
     </div>
   );
