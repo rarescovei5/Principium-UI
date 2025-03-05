@@ -66,6 +66,11 @@ import {
   ContextMenuContent,
   ContextMenuTrigger,
 } from './ModernTheme/ContextMenu';
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from './ModernTheme/Collapsible';
 function App() {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [checked, setChecked] = useState(false);
@@ -260,9 +265,6 @@ function App() {
         </Carousel>
       </div>
       <div className="w-[80%] mx-auto">
-        <h3 className="h3">Chart</h3>
-      </div>
-      <div className="w-[80%] mx-auto">
         <h3 className="h3">Checkbox</h3>
         <div className="flex items-center gap-2">
           <Checkbox
@@ -276,6 +278,29 @@ function App() {
       </div>
       <div className="w-[80%] mx-auto">
         <h3 className="h3">Collapsible</h3>
+        <Collapsible className="w-[350px] space-y-2">
+          <div className="flex items-center justify-between space-x-4 px-4">
+            <h4 className="text-sm font-semibold">
+              @peduarte starred 3 repositories
+            </h4>
+            <CollapsibleTrigger asChild>
+              <Button variant="ghost" className="w-9 p-0" icon>
+                () <span className="sr-only">Toggle</span>
+              </Button>
+            </CollapsibleTrigger>
+          </div>
+          <div className="rounded-md border border-border px-4 py-3 font-mono text-sm">
+            @radix-ui/primitives
+          </div>
+          <CollapsibleContent className="space-y-2">
+            <div className="rounded-md border border-border px-4 py-3 font-mono text-sm">
+              @radix-ui/colors
+            </div>
+            <div className="rounded-md border border-border px-4 py-3 font-mono text-sm">
+              @stitches/react
+            </div>
+          </CollapsibleContent>
+        </Collapsible>
       </div>
       <div className="w-[80%] mx-auto">
         <h3 className="h3">Command</h3>
