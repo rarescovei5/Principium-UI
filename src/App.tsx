@@ -87,10 +87,12 @@ import {
   ToastTitle,
   ToastTrigger,
 } from './ModernTheme/Toast';
+import { Toggle } from './ModernTheme/Toggle';
 function App() {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [checked, setChecked] = useState(false);
   const [openCommandDialog, setOpenCommandDialog] = useState(false);
+  const [isSelected, setIsSelected] = useState(false);
 
   useEffect(() => {
     const handleCtrlK = (e: KeyboardEvent) => {
@@ -564,11 +566,33 @@ function App() {
           </ToastContent>
         </Toast>
       </div>
-      <div className="w-[80%] mx-auto">
-        <h3 className="h3">Toggle Group</h3>
-      </div>
+
       <div className="w-[80%] mx-auto">
         <h3 className="h3">Toggle</h3>
+        <Toggle
+          isSelected={isSelected}
+          toggle={() => {
+            setIsSelected((prev) => !prev);
+          }}
+        >
+          A
+        </Toggle>
+        <Toggle
+          isSelected={isSelected}
+          toggle={() => {
+            setIsSelected((prev) => !prev);
+          }}
+        >
+          B
+        </Toggle>
+        <Toggle
+          isSelected={isSelected}
+          toggle={() => {
+            setIsSelected((prev) => !prev);
+          }}
+        >
+          C
+        </Toggle>
       </div>
       <div className="w-[80%] mx-auto">
         <h3 className="h3">Tooltip</h3>

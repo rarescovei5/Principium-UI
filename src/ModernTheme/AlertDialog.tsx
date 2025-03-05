@@ -27,7 +27,7 @@ const AlertDialogTrigger = ({
   ...props
 }: React.HTMLAttributes<HTMLButtonElement> & {
   asChild?: boolean;
-  children: React.ReactNode | React.ReactElement<any>;
+  children?: React.ReactNode | React.ReactElement<any>;
 }) => {
   const context = useContext(AlertDialogContext);
 
