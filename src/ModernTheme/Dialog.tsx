@@ -200,11 +200,12 @@ const DialogAction = ({
 };
 export {
   Dialog,
-  DialogClose,
   DialogTrigger,
   DialogContent,
   DialogHeader,
   DialogFooter,
   DialogTitle,
+  DialogClose,
+  DialogAction,
   DialogDescription,
 };

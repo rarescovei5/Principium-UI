@@ -77,6 +77,7 @@ import {
   HoverCardTrigger,
 } from './ModernTheme/HoverCard';
 import { Skeleton } from './ModernTheme/Skeleton';
+import { Progress } from './ModernTheme/Progress';
 function App() {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [checked, setChecked] = useState(false);
@@ -446,12 +447,7 @@ function App() {
           </DialogContent>
         </Dialog>
       </div>
-      <div className="w-[80%] mx-auto">
-        <h3 className="h3">Drawer</h3>
-      </div>
-      <div className="w-[80%] mx-auto">
-        <h3 className="h3">DropdownMenu</h3>
-      </div>
+
       <div className="w-[80%] mx-auto">
         <h3 className="h3">Form</h3>
       </div>
@@ -491,12 +487,7 @@ function App() {
         <h3 className="h3">Label</h3>
         <Label htmlFor="username">Label For Input</Label>
       </div>
-      <div className="w-[80%] mx-auto">
-        <h3 className="h3">MenuBar</h3>
-      </div>
-      <div className="w-[80%] mx-auto">
-        <h3 className="h3">Pagination</h3>
-      </div>
+
       <div className="w-[80%] mx-auto">
         <h3 className="h3">Popover</h3>
         <Popover>
@@ -508,6 +499,7 @@ function App() {
       </div>
       <div className="w-[80%] mx-auto">
         <h3 className="h3">Progress</h3>
+        <Progress progress={20} />
       </div>
       <div className="w-[80%] mx-auto">
         <h3 className="h3">RadioGroup</h3>
@@ -520,9 +512,6 @@ function App() {
       </div>
       <div className="w-[80%] mx-auto">
         <h3 className="h3">Select</h3>
-      </div>
-      <div className="w-[80%] mx-auto">
-        <h3 className="h3">Sheet</h3>
       </div>
 
       <div className="w-[80%] mx-auto">
