@@ -3,8 +3,10 @@ import { SetStateAction, useState } from 'react';
 
 const Calendar = ({
   selectedDate,
+  className = '',
   setSelectedDate,
 }: {
+  className?: string;
   selectedDate: Date;
   setSelectedDate: React.Dispatch<SetStateAction<Date>>;
 }) => {
@@ -45,7 +47,12 @@ const Calendar = ({
   };
 
   return (
-    <div className="inline-flex flex-col h-full text-white border border-border rounded-lg p-4">
+    <div
+      className={
+        'inline-flex bg-bg flex-col h-full text-white border border-border rounded-lg p-4 ' +
+        className
+      }
+    >
       {/* Month/Year Title */}
       <div className="flex justify-between items-center mb-4">
         <button

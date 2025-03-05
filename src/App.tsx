@@ -347,6 +347,22 @@ function App() {
       </div>
       <div className="w-[80%] mx-auto">
         <h3 className="h3">DatePicker</h3>
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button variant="outline" className="min-w-40">
+              {selectedDate
+                ? selectedDate.toISOString().substring(0, 10)
+                : 'Pick a date'}
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent>
+            <Calendar
+              className="w-80"
+              selectedDate={selectedDate}
+              setSelectedDate={setSelectedDate}
+            />
+          </PopoverContent>
+        </Popover>
       </div>
       <div className="w-[80%] mx-auto">
         <h3 className="h3">Dialog</h3>
