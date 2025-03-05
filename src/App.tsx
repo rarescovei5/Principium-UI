@@ -71,6 +71,12 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from './ModernTheme/Collapsible';
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from './ModernTheme/HoverCard';
+import { Skeleton } from './ModernTheme/Skeleton';
 function App() {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [checked, setChecked] = useState(false);
@@ -385,9 +391,6 @@ function App() {
         </ContextMenu>
       </div>
       <div className="w-[80%] mx-auto">
-        <h3 className="h3">Data Table</h3>
-      </div>
-      <div className="w-[80%] mx-auto">
         <h3 className="h3">DatePicker</h3>
         <Popover>
           <PopoverTrigger asChild>
@@ -454,6 +457,28 @@ function App() {
       </div>
       <div className="w-[80%] mx-auto">
         <h3 className="h3">HoverCard</h3>
+        <HoverCard>
+          <HoverCardTrigger asChild>
+            <Button variant="link">@nextjs</Button>
+          </HoverCardTrigger>
+          <HoverCardContent className="w-80">
+            <div className="flex justify-between space-x-4">
+              <Avatar src="https://github.com/vercel.png" />
+
+              <div className="space-y-1">
+                <h4 className="text-sm font-semibold">@nextjs</h4>
+                <p className="text-sm">
+                  The React Framework – created and maintained by @vercel.
+                </p>
+                <div className="flex items-center pt-2">
+                  <span className="text-xs text-muted-foreground">
+                    Joined December 2021
+                  </span>
+                </div>
+              </div>
+            </div>
+          </HoverCardContent>
+        </HoverCard>
       </div>
       <div className="w-[80%] mx-auto">
         <h3 className="h3">Input</h3>
@@ -468,9 +493,6 @@ function App() {
       </div>
       <div className="w-[80%] mx-auto">
         <h3 className="h3">MenuBar</h3>
-      </div>
-      <div className="w-[80%] mx-auto">
-        <h3 className="h3">NavigationMenu</h3>
       </div>
       <div className="w-[80%] mx-auto">
         <h3 className="h3">Pagination</h3>
@@ -500,16 +522,18 @@ function App() {
         <h3 className="h3">Select</h3>
       </div>
       <div className="w-[80%] mx-auto">
-        <h3 className="h3">Separator</h3>
-      </div>
-      <div className="w-[80%] mx-auto">
         <h3 className="h3">Sheet</h3>
       </div>
-      <div className="w-[80%] mx-auto">
-        <h3 className="h3">Sidebar</h3>
-      </div>
+
       <div className="w-[80%] mx-auto">
         <h3 className="h3">Skeleton</h3>
+        <div className="flex items-center space-x-4">
+          <Skeleton className="h-12 w-12 rounded-full" />
+          <div className="space-y-2">
+            <Skeleton className="h-4 w-[250px]" />
+            <Skeleton className="h-4 w-[200px]" />
+          </div>
+        </div>
       </div>
       <div className="w-[80%] mx-auto">
         <h3 className="h3">Slider</h3>
