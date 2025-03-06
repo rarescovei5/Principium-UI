@@ -90,11 +90,13 @@ import {
 import { Toggle } from './ModernTheme/Toggle';
 import { Switch } from './ModernTheme/Switch';
 import { Textarea } from './ModernTheme/Textarea';
+import { Slider } from './ModernTheme/Slider';
 function App() {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [checked, setChecked] = useState(false);
   const [openCommandDialog, setOpenCommandDialog] = useState(false);
   const [isSelected, setIsSelected] = useState(false);
+  const [sliderVal, setSliderVal] = useState(50);
 
   useEffect(() => {
     const handleCtrlK = (e: KeyboardEvent) => {
@@ -539,6 +541,7 @@ function App() {
       </div>
       <div className="w-[80%] mx-auto">
         <h3 className="h3">Slider</h3>
+        <Slider value={sliderVal} setValue={setSliderVal} max={100} step={1} />
       </div>
       <div className="w-[80%] mx-auto">
         <h3 className="h3">Switch</h3>
