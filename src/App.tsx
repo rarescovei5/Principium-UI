@@ -89,6 +89,7 @@ import {
 } from './ModernTheme/Toast';
 import { Toggle } from './ModernTheme/Toggle';
 import { Switch } from './ModernTheme/Switch';
+import { Textarea } from './ModernTheme/Textarea';
 function App() {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [checked, setChecked] = useState(false);
@@ -540,9 +541,6 @@ function App() {
         <h3 className="h3">Slider</h3>
       </div>
       <div className="w-[80%] mx-auto">
-        <h3 className="h3">Sonner</h3>
-      </div>
-      <div className="w-[80%] mx-auto">
         <h3 className="h3">Switch</h3>
         <div className="flex gap-2 items-center">
           <Switch
@@ -558,10 +556,8 @@ function App() {
         <h3 className="h3">Table</h3>
       </div>
       <div className="w-[80%] mx-auto">
-        <h3 className="h3">Tabs</h3>
-      </div>
-      <div className="w-[80%] mx-auto">
         <h3 className="h3">TextArea</h3>
+        <Textarea />
       </div>
       <div className="w-[80%] mx-auto">
         <h3 className="h3">Toast</h3>
