@@ -516,18 +516,6 @@ function App() {
         <h3 className="h3">Progress</h3>
         <Progress progress={20} />
       </div>
-      <div className="w-[80%] mx-auto">
-        <h3 className="h3">RadioGroup</h3>
-      </div>
-      <div className="w-[80%] mx-auto">
-        <h3 className="h3">Resizable</h3>
-      </div>
-      <div className="w-[80%] mx-auto">
-        <h3 className="h3">ScrollArea</h3>
-      </div>
-      <div className="w-[80%] mx-auto">
-        <h3 className="h3">Select</h3>
-      </div>
 
       <div className="w-[80%] mx-auto">
         <h3 className="h3">Skeleton</h3>
@@ -555,9 +543,7 @@ function App() {
           <Label>Airplane Mode</Label>
         </div>
       </div>
-      <div className="w-[80%] mx-auto">
-        <h3 className="h3">Table</h3>
-      </div>
+
       <div className="w-[80%] mx-auto">
         <h3 className="h3">TextArea</h3>
         <Textarea />
