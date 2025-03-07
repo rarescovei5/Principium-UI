@@ -1,51 +1,135 @@
-import { createContext, useContext, useState } from 'react';
+import React, {
+  createContext,
+  SetStateAction,
+  useContext,
+  useState,
+  ReactNode,
+  HTMLAttributes,
+  FC,
+  Dispatch,
+} from 'react';
+
+// ────────────────────────────────────────────────────────────────
+// CONTEXTS
+// ────────────────────────────────────────────────────────────────
 
 interface AccordionContextType {
-  isOpen: boolean;
-  toggle: () => void;
+  openItem: number;
+  setOpenItem: Dispatch<SetStateAction<number>>;
+}
+const AccordionContext = createContext<AccordionContextType | null>(null);
+const useAccordionContext = () => {
+  const context = useContext(AccordionContext);
+  if (!context) {
+    throw new Error(
+      'Accordion components must be used within an Accordion provider'
+    );
+  }
+  return context;
+};
+
+// Create a context to store the index for each AccordionItem
+const AccordionItemContext = createContext<number | null>(null);
+const useAccordionItemContext = () => {
+  const context = useContext(AccordionItemContext);
+  if (context === null) {
+    throw new Error(
+      'AccordionTrigger and AccordionContent must be used within an AccordionItem'
+    );
+  }
+  return context;
+};
+
+// ────────────────────────────────────────────────────────────────
+// PROP TYPES
+// ────────────────────────────────────────────────────────────────
+interface AccordionProps extends HTMLAttributes<HTMLDivElement> {
+  children: ReactNode;
 }
 
-const AccordionContext = createContext<AccordionContextType>({
-  isOpen: false,
-  toggle: () => {},
-});
+interface AccordionItemProps extends HTMLAttributes<HTMLDivElement> {
+  index?: number;
+  children: ReactNode;
+}
 
-const AccordionItem = ({
+interface AccordionTriggerProps
+  extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  children: ReactNode;
+}
+
+interface AccordionContentProps extends HTMLAttributes<HTMLDivElement> {
+  children: ReactNode;
+}
+
+// ────────────────────────────────────────────────────────────────
+// COMPONENTS
+// ────────────────────────────────────────────────────────────────
+
+const Accordion: FC<AccordionProps> = ({
+  className = '',
   children,
-  className,
   ...props
-}: React.HtmlHTMLAttributes<HTMLDivElement>) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const toggle = () => setIsOpen((prev) => !prev);
+}) => {
+  const [openItem, setOpenItem] = useState(-1);
 
   return (
-    <AccordionContext.Provider value={{ isOpen, toggle }}>
-      <div className="border-b-[1px] border-b-border" {...props}>
-        {children}
+    <AccordionContext.Provider value={{ openItem, setOpenItem }}>
+      <div className={`flex flex-col ${className}`} {...props}>
+        {React.Children.map(children, (child, idx) =>
+          !React.isValidElement(child)
+            ? child
+            : // Inject the index prop into each AccordionItem
+              React.cloneElement(
+                child as React.ReactElement<AccordionItemProps>,
+                { index: idx }
+              )
+        )}
       </div>
     </AccordionContext.Provider>
   );
 };
 
-const AccordionTrigger = ({
+const AccordionItem: FC<AccordionItemProps> = ({
   children,
-  className,
-  onClick,
+  index,
+  className = '',
   ...props
-}: React.ButtonHTMLAttributes<HTMLButtonElement>) => {
-  const context = useContext(AccordionContext);
+}) => {
+  if (index === undefined) {
+    throw new Error('AccordionItem must have an index');
+  }
+  return (
+    <AccordionItemContext.Provider value={index}>
+      <div className={`border-b-[1px] ${className}`} {...props}>
+        {children}
+      </div>
+    </AccordionItemContext.Provider>
+  );
+};
+
+const AccordionTrigger: FC<AccordionTriggerProps> = ({
+  children,
+  className = '',
+  ...props
+}) => {
+  const { openItem, setOpenItem } = useAccordionContext();
+  const itemIndex = useAccordionItemContext();
+
+  const handleClick = () => {
+    setOpenItem(openItem === itemIndex ? -1 : itemIndex);
+  };
 
   return (
     <button
-      className="w-full my-4 flex justify-between items-center h3 cursor-pointer hover:underline text-left"
-      onClick={context.toggle}
+      className={`w-full my-4 flex justify-between items-center cursor-pointer hover:underline text-left h3 ${className}`}
+      onClick={handleClick}
       {...props}
     >
       {children}
-
+      {/* Chevron Down SVG */}
       <svg
         className={`w-4 transition-transform duration-300 ml-4 ${
-          context.isOpen ? 'rotate-180' : ''
+          openItem === itemIndex ? 'rotate-180' : ''
         }`}
         viewBox="0 0 8 4"
         fill="none"
@@ -60,37 +144,23 @@ const AccordionTrigger = ({
   );
 };
 
-const AccordionContent = ({
-  className,
+const AccordionContent: FC<AccordionContentProps> = ({
+  className = '',
   children,
   ...props
-}: React.HTMLAttributes<HTMLDivElement>) => {
-  const context = useContext(AccordionContext);
+}) => {
+  const { openItem } = useAccordionContext();
+  const itemIndex = useAccordionItemContext();
+  const isOpen = openItem === itemIndex;
 
   return (
     <div
-      className={`text-subtext grid transition-all duration-300 ${
-        context.isOpen ? 'mb-4 grid-rows-[1fr]' : 'grid-rows-[0fr]'
-      }`}
+      className={`grid transition-all duration-300 ${
+        isOpen ? 'mb-4 grid-rows-[1fr]' : 'grid-rows-[0fr]'
+      } ${className}`}
       {...props}
     >
       <div className="p overflow-hidden">{children}</div>
-    </div>
-  );
-};
-
-const Accordion = ({
-  className,
-  children,
-  ...props
-}: {
-  className?: string;
-  children: React.ReactNode;
-  props?: any;
-}) => {
-  return (
-    <div className="flex flex-col" {...props}>
-      {children}
     </div>
   );
 };

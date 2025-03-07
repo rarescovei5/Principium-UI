@@ -6,7 +6,6 @@ import React, {
   ReactNode,
   ReactElement,
   FC,
-  useEffect,
 } from 'react';
 import { Dialog, DialogContent } from './Dialog';
 

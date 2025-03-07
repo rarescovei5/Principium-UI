@@ -110,21 +110,17 @@ function App() {
     };
   }, []);
 
-  // Yes, I know that I currently have undefined classes since I am not checking before adding if they exists in the components
-  // I plan to make a utility function similar to shadcn's that just combines the classes and use that everywhere.
-  // That will come in later versions I guess
-
   return (
     <div className="flex flex-col gap-30 my-30">
       <div className="w-[80%] mx-auto">
         <h3 className="h3">Accordion</h3>
         <Accordion className="w-full">
-          <AccordionItem>
+          <AccordionItem className="border-border">
             <AccordionTrigger>
               Nulla proident cillum proident aute reprehenderit commodo est
               irure.
             </AccordionTrigger>
-            <AccordionContent>
+            <AccordionContent className="text-subtext">
               Enim sint excepteur elit cillum. In laborum pariatur consectetur
               ipsum enim labore deserunt nostrud aliqua cupidatat. Sit officia
               laborum elit fugiat non do. Esse aute qui qui ut ad fugiat in
@@ -132,23 +128,23 @@ function App() {
               reprehenderit aliqua in ut ullamco cillum labore excepteur.
             </AccordionContent>
           </AccordionItem>
-          <AccordionItem>
+          <AccordionItem className="border-border">
             <AccordionTrigger>
               Exercitation ipsum velit irure esse laborum exercitation
               incididunt velit deserunt et in ex.
             </AccordionTrigger>
-            <AccordionContent>
+            <AccordionContent className="text-subtext">
               Sunt eu non incididunt Lorem. Officia laborum duis duis amet aute
               ex cillum. Lorem pariatur eu tempor ut exercitation voluptate eu
               voluptate aliquip adipisicing. Lorem excepteur ex ad adipisicing
               ex adipisicing commodo nulla do do commodo cupidatat.
             </AccordionContent>
           </AccordionItem>
-          <AccordionItem>
+          <AccordionItem className="border-border">
             <AccordionTrigger>
               Est do irure enim cillum irure nostrud do.
             </AccordionTrigger>
-            <AccordionContent>
+            <AccordionContent className="text-subtext">
               Minim minim dolor occaecat veniam. In non dolor cillum tempor.
               Culpa sit irure ex amet est enim. Ad duis ipsum sit ex eu ad
               officia cupidatat. Tempor velit esse excepteur consequat proident
@@ -462,10 +458,6 @@ function App() {
           </DialogContent>
         </Dialog>
       </div>
-
-      <div className="w-[80%] mx-auto">
-        <h3 className="h3">Form</h3>
-      </div>
       <div className="w-[80%] mx-auto">
         <h3 className="h3">HoverCard</h3>
         <HoverCard>
@@ -496,13 +488,9 @@ function App() {
         <Input id="username" defaultValue="Rareseanu" className="col-span-3" />
       </div>
       <div className="w-[80%] mx-auto">
-        <h3 className="h3">InputOTP</h3>
-      </div>
-      <div className="w-[80%] mx-auto">
         <h3 className="h3">Label</h3>
         <Label htmlFor="username">Label For Input</Label>
       </div>
-
       <div className="w-[80%] mx-auto">
         <h3 className="h3">Popover</h3>
         <Popover>
@@ -516,7 +504,6 @@ function App() {
         <h3 className="h3">Progress</h3>
         <Progress progress={20} />
       </div>
-
       <div className="w-[80%] mx-auto">
         <h3 className="h3">Skeleton</h3>
         <div className="flex items-center space-x-4">
@@ -543,7 +530,6 @@ function App() {
           <Label>Airplane Mode</Label>
         </div>
       </div>
-
       <div className="w-[80%] mx-auto">
         <h3 className="h3">TextArea</h3>
         <Textarea />
