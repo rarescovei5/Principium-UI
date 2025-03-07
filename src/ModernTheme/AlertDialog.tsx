@@ -1,15 +1,33 @@
 import React, { createContext, useContext, useState } from 'react';
 import { Button } from './Button';
 
+// ────────────────────────────────────────────────────────────────
+// ALERT DIALOG CONTEXT
+// ────────────────────────────────────────────────────────────────
+
 interface AlertDialogContextType {
   isOpen: boolean;
   toggle: () => void;
 }
-const AlertDialogContext = createContext<AlertDialogContextType>({
-  isOpen: false,
-  toggle: () => {},
-});
 
+const AlertDialogContext = createContext<AlertDialogContextType | null>(null);
+
+const useAlertDialogContext = () => {
+  const context = useContext(AlertDialogContext);
+  if (!context)
+    throw new Error(
+      `AlertDialog Components Must be used inside of an AlertDialog component`
+    );
+  return context;
+};
+// ────────────────────────────────────────────────────────────────
+// ALERT DIALOG PROVIDER
+// ────────────────────────────────────────────────────────────────
+
+/**
+ * AlertDialog component that provides the AlertDialog context.
+ * It manages the open/close state.
+ */
 const AlertDialog = ({ children }: { children: React.ReactNode }) => {
   const [isOpen, setIsOpen] = useState(false);
   const toggle = () => setIsOpen((prev) => !prev);
@@ -20,16 +38,25 @@ const AlertDialog = ({ children }: { children: React.ReactNode }) => {
   );
 };
 
+// ────────────────────────────────────────────────────────────────
+// ALERT DIALOG TRIGGER
+// ────────────────────────────────────────────────────────────────
+
+/**
+ * AlertDialogTrigger component. It supports an `asChild` prop so that the trigger
+ * can be rendered as a custom element. If `asChild` is true, it clones the child
+ * and injects an onClick handler to toggle the dialog.
+ */
 const AlertDialogTrigger = ({
   children,
-  className,
+  className = '',
   asChild = false,
   ...props
 }: React.HTMLAttributes<HTMLButtonElement> & {
   asChild?: boolean;
   children?: React.ReactNode | React.ReactElement<any>;
 }) => {
-  const context = useContext(AlertDialogContext);
+  const context = useAlertDialogContext();
 
   if (asChild) {
     if (!React.isValidElement(children)) {
@@ -38,11 +65,13 @@ const AlertDialogTrigger = ({
       );
       return null;
     }
+    // Clone the child element and inject the onClick handler.
     return React.cloneElement(children, {
       onClick: context.toggle,
     });
   }
 
+  // If not using asChild, render the default Button.
   return (
     <Button variant="outline" onClick={context.toggle} {...props}>
       {children}
@@ -50,19 +79,30 @@ const AlertDialogTrigger = ({
   );
 };
 
+// ────────────────────────────────────────────────────────────────
+// ALERT DIALOG CONTENT (Header, Footer, Title, Description)
+// ────────────────────────────────────────────────────────────────
+
+/**
+ * AlertDialogContent component. It conditionally renders its content based on
+ * whether the dialog is open. When open, it displays a centered overlay.
+ */
 const AlertDialogContent = ({
   children,
-  className,
+  className = '',
   ...props
 }: {
   children: React.ReactNode;
   className?: any;
   props?: any;
 }) => {
-  const context = useContext(AlertDialogContext);
+  const context = useAlertDialogContext();
   return context.isOpen ? (
     <div className="fixed z-1000 inset-0 bg-bg/75 backdrop-opacity-5 bg-opacity-5 grid place-content-center">
-      <div className="w-2xl bg-bg flex flex-col gap-4 border border-border p-6 rounded-lg">
+      <div
+        className={`w-2xl bg-bg flex flex-col gap-4 border border-border p-6 rounded-lg ${className}`}
+        {...props}
+      >
         {children}
       </div>
     </div>
@@ -71,9 +111,12 @@ const AlertDialogContent = ({
   );
 };
 
+/**
+ * AlertDialogHeader component that renders the header section of the dialog.
+ */
 const AlertDialogHeader = ({
   children,
-  className,
+  className = '',
   ...props
 }: {
   children: React.ReactNode;
@@ -81,30 +124,37 @@ const AlertDialogHeader = ({
   props?: any;
 }) => {
   return (
-    <div className="flex flex-col gap-2" {...props}>
-      {children}
-    </div>
-  );
-};
-const AlertDialogFooter = ({
-  children,
-  className,
-  ...props
-}: {
-  children: React.ReactNode;
-  className?: any;
-  props?: any;
-}) => {
-  return (
-    <div className="self-end flex gap-4" {...props}>
+    <div className={`flex flex-col gap-2 ${className}`} {...props}>
       {children}
     </div>
   );
 };
 
+/**
+ * AlertDialogFooter component that renders the footer section of the dialog.
+ */
+const AlertDialogFooter = ({
+  children,
+  className = '',
+  ...props
+}: {
+  children: React.ReactNode;
+  className?: any;
+  props?: any;
+}) => {
+  return (
+    <div className={`self-end flex gap-4 ${className}`} {...props}>
+      {children}
+    </div>
+  );
+};
+
+/**
+ * AlertDialogTitle component that renders the title of the dialog.
+ */
 const AlertDialogTitle = ({
   children,
-  className,
+  className = '',
   ...props
 }: {
   children: React.ReactNode;
@@ -117,9 +167,13 @@ const AlertDialogTitle = ({
     </div>
   );
 };
+
+/**
+ * AlertDialogDescription component that renders the description content.
+ */
 const AlertDialogDescription = ({
   children,
-  className,
+  className = '',
   ...props
 }: {
   children: React.ReactNode;
@@ -133,9 +187,17 @@ const AlertDialogDescription = ({
   );
 };
 
+// ────────────────────────────────────────────────────────────────
+// ALERT DIALOG CANCEL BUTTON
+// ────────────────────────────────────────────────────────────────
+
+/**
+ * AlertDialogCancel component renders a cancel button. It automatically toggles
+ * the dialog off when clicked.
+ */
 const AlertDialogCancel = ({
   children,
-  className,
+  className = '',
   onClick,
   ...props
 }: {
@@ -144,10 +206,10 @@ const AlertDialogCancel = ({
   className?: any;
   props?: any;
 }) => {
-  const context = useContext(AlertDialogContext);
+  const context = useAlertDialogContext();
   return (
     <button
-      className="px-6 py-2 rounded-lg border border-border hover:bg-border cursor-pointer transition-colors duration-150 p"
+      className={`px-6 py-2 rounded-lg border border-border hover:bg-border cursor-pointer transition-colors duration-150 p ${className}`}
       onClick={context.toggle}
       {...props}
     >
@@ -155,9 +217,17 @@ const AlertDialogCancel = ({
     </button>
   );
 };
+
+// ────────────────────────────────────────────────────────────────
+// ALERT DIALOG ACTION BUTTON
+// ────────────────────────────────────────────────────────────────
+
+/**
+ * AlertDialogAction component renders an action button.
+ */
 const AlertDialogAction = ({
   children,
-  className,
+  className = '',
   ...props
 }: {
   children: React.ReactNode;
@@ -166,7 +236,7 @@ const AlertDialogAction = ({
 }) => {
   return (
     <button
-      className="px-6 py-2 rounded-lg text-bg bg-white cursor-pointer transition-colors duration-150 hover:bg-white/90 p"
+      className={`px-6 py-2 rounded-lg text-bg bg-white cursor-pointer transition-colors duration-150 hover:bg-white/90 p ${className}`}
       {...props}
     >
       {children}
