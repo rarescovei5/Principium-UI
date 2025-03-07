@@ -4,6 +4,11 @@ import { Link, LinkProps } from 'react-router-dom';
  * IMPORTANT: You need the `react-router-dom` dependency for this component to work!
  * This is required for navigation and link handling within the app.
  */
+
+// ────────────────────────────────────────────────────────────────
+// COMPONENTS
+// ────────────────────────────────────────────────────────────────
+
 const Breadcrumb = ({
   children,
   className = '',
