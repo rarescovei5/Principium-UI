@@ -22,9 +22,7 @@ interface AlertIconProps extends React.HTMLAttributes<HTMLDivElement> {
   index?: number;
   children: React.ReactElement<HTMLImageElement>;
 }
-interface AlertCircleProps extends React.HTMLAttributes<SVGElement> {
-  children: React.ReactNode;
-}
+interface AlertCircleProps extends React.HTMLAttributes<SVGElement> {}
 interface AlertTitleProps extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode;
 }
@@ -51,6 +49,7 @@ const Alert: React.FC<AlertProps> = ({
             'IC TT'
             '. CT'
             `,
+          rowGap: '0.25rem',
           gridTemplateColumns: 'auto 1fr',
         }}
         className={`max-w-2xl p-4 border rounded-lg ${
@@ -90,7 +89,7 @@ const AlertTitle: React.FC<AlertTitleProps> = ({
   return (
     <div
       style={{ gridArea: 'TT' }}
-      className={`h3 ${
+      className={`h4  ${
         context.variant === 'destructive' && 'text-error'
       } ${className}`}
       {...props}

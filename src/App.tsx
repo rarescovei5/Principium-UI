@@ -158,28 +158,32 @@ function App() {
         <h3 className="h3">Alert</h3>
         <Alert className={'mb-4'}>
           <AlertIcon>
-            <AlertCircle className="w-4" />
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="w-4"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <polyline points="4 17 10 11 4 5"></polyline>
+              <line x1="12" x2="20" y1="19" y2="19"></line>
+            </svg>
           </AlertIcon>
-          <AlertTitle>Adipisicing anim proident deserunt.</AlertTitle>
+          <AlertTitle>Heads up!</AlertTitle>
           <AlertDescription>
-            Ut velit quis ullamco mollit cupidatat tempor qui exercitation. Ea
-            deserunt deserunt nostrud commodo ea. Exercitation labore enim culpa
-            dolor enim aliquip enim nisi. Lorem incididunt aute quis esse labore
-            excepteur occaecat veniam. Ullamco amet elit aute nostrud laborum
-            commodo anim.
+            You can add components to your app using the cli.
           </AlertDescription>
         </Alert>
         <Alert variant="destructive">
           <AlertIcon>
             <AlertCircle className="w-4" />
           </AlertIcon>
-          <AlertTitle>Adipisicing anim proident deserunt.</AlertTitle>
+          <AlertTitle>Error</AlertTitle>
           <AlertDescription>
-            Ut velit quis ullamco mollit cupidatat tempor qui exercitation. Ea
-            deserunt deserunt nostrud commodo ea. Exercitation labore enim culpa
-            dolor enim aliquip enim nisi. Lorem incididunt aute quis esse labore
-            excepteur occaecat veniam. Ullamco amet elit aute nostrud laborum
-            commodo anim.
+            Your session has expired. Please log in again.
           </AlertDescription>
         </Alert>
       </div>
