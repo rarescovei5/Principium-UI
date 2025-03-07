@@ -3,8 +3,6 @@ import React, {
   SetStateAction,
   useContext,
   useState,
-  ReactNode,
-  HTMLAttributes,
   FC,
   Dispatch,
 } from 'react';
@@ -43,22 +41,22 @@ const useAccordionItemContext = () => {
 // ────────────────────────────────────────────────────────────────
 // PROP TYPES
 // ────────────────────────────────────────────────────────────────
-interface AccordionProps extends HTMLAttributes<HTMLDivElement> {
-  children: ReactNode;
+interface AccordionProps extends React.HTMLAttributes<HTMLDivElement> {
+  children: React.ReactNode;
 }
 
-interface AccordionItemProps extends HTMLAttributes<HTMLDivElement> {
+interface AccordionItemProps extends React.HTMLAttributes<HTMLDivElement> {
   index?: number;
-  children: ReactNode;
+  children: React.ReactNode;
 }
 
 interface AccordionTriggerProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  children: ReactNode;
+  children: React.ReactNode;
 }
 
-interface AccordionContentProps extends HTMLAttributes<HTMLDivElement> {
-  children: ReactNode;
+interface AccordionContentProps extends React.HTMLAttributes<HTMLDivElement> {
+  children: React.ReactNode;
 }
 
 // ────────────────────────────────────────────────────────────────

@@ -1,5 +1,8 @@
 import React, { createContext, useContext } from 'react';
 
+// ────────────────────────────────────────────────────────────────
+// CONTEXT
+// ────────────────────────────────────────────────────────────────
 interface AlertContextType {
   variant: 'normal' | 'destructive';
 }
@@ -8,16 +11,36 @@ const AlertContext = createContext<AlertContextType>({
   variant: 'normal',
 });
 
-const Alert = ({
-  children,
-  variant = 'normal',
-  className,
-  ...props
-}: {
+// ────────────────────────────────────────────────────────────────
+// PROP TYPES
+// ────────────────────────────────────────────────────────────────
+interface AlertProps extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode;
   variant?: 'normal' | 'destructive';
-  className?: any;
-  props?: any;
+}
+interface AlertIconProps extends React.HTMLAttributes<HTMLDivElement> {
+  index?: number;
+  children: React.ReactElement<HTMLImageElement>;
+}
+interface AlertCircleProps extends React.HTMLAttributes<SVGElement> {
+  children: React.ReactNode;
+}
+interface AlertTitleProps extends React.HTMLAttributes<HTMLDivElement> {
+  children: React.ReactNode;
+}
+
+interface AlertDescriptionProps extends React.HTMLAttributes<HTMLDivElement> {
+  children: React.ReactNode;
+}
+
+// ────────────────────────────────────────────────────────────────
+// COMPONENTS
+// ────────────────────────────────────────────────────────────────
+const Alert: React.FC<AlertProps> = ({
+  children,
+  variant = 'normal',
+  className = '',
+  ...props
 }) => {
   return (
     <AlertContext.Provider value={{ variant }}>
@@ -30,11 +53,9 @@ const Alert = ({
             `,
           gridTemplateColumns: 'auto 1fr',
         }}
-        className={
-          `max-w-2xl p-4 border ${
-            variant === 'destructive' ? 'border-error' : 'border-border'
-          } rounded-lg ` + className
-        }
+        className={`max-w-2xl p-4 border rounded-lg ${
+          variant === 'destructive' ? 'border-error' : 'border-border'
+        } ${className}`}
         {...props}
       >
         {children}
@@ -43,14 +64,10 @@ const Alert = ({
   );
 };
 
-const AlertIcon = ({
-  className,
+const AlertIcon: React.FC<AlertIconProps> = ({
+  className = '',
   children,
   ...props
-}: {
-  className?: any;
-  children: React.ReactElement<HTMLImageElement>;
-  props?: any;
 }) => {
   return (
     <div style={{ gridArea: 'IC' }} {...props}>
@@ -63,21 +80,19 @@ const AlertIcon = ({
   );
 };
 
-const AlertTitle = ({
+const AlertTitle: React.FC<AlertTitleProps> = ({
   children,
-  className,
+  className = '',
   ...props
-}: {
-  children: React.ReactNode;
-  className?: any;
-  props?: any;
 }) => {
   const context = useContext(AlertContext);
 
   return (
     <div
       style={{ gridArea: 'TT' }}
-      className={`h3 ${context.variant === 'destructive' && 'text-error'}`}
+      className={`h3 ${
+        context.variant === 'destructive' && 'text-error'
+      } ${className}`}
       {...props}
     >
       {children}
@@ -85,21 +100,19 @@ const AlertTitle = ({
   );
 };
 
-const AlertDescription = ({
+const AlertDescription: React.FC<AlertDescriptionProps> = ({
   children,
-  className,
+  className = '',
   ...props
-}: {
-  children: React.ReactNode;
-  className?: any;
-  props?: any;
 }) => {
   const context = useContext(AlertContext);
 
   return (
     <div
       style={{ gridArea: 'CT' }}
-      className={`p ${context.variant === 'destructive' && 'text-error'}`}
+      className={`p ${
+        context.variant === 'destructive' && 'text-error'
+      } ${className}`}
       {...props}
     >
       {children}
@@ -107,12 +120,9 @@ const AlertDescription = ({
   );
 };
 
-const AlertCircle = ({
-  className,
+const AlertCircle: React.FC<AlertCircleProps> = ({
+  className = '',
   ...props
-}: {
-  className?: any;
-  props?: any;
 }) => {
   return (
     <svg
