@@ -2,13 +2,67 @@ import React, { createContext, useContext, useState } from 'react';
 import { Button } from './Button';
 
 // ────────────────────────────────────────────────────────────────
-// ALERT DIALOG CONTEXT
+// PROP TYPES
 // ────────────────────────────────────────────────────────────────
 
 interface AlertDialogContextType {
   isOpen: boolean;
   toggle: () => void;
 }
+
+interface AlertDialogProps extends React.HTMLAttributes<HTMLDivElement> {
+  children: React.ReactNode;
+}
+
+interface AlertDialogTriggerProps
+  extends React.HTMLAttributes<HTMLButtonElement> {
+  asChild?: boolean;
+  children: React.ReactNode | React.ReactElement<any>;
+  className?: string;
+}
+
+interface AlertDialogContentProps extends React.HTMLAttributes<HTMLDivElement> {
+  children: React.ReactNode;
+  className?: string;
+}
+
+interface AlertDialogHeaderProps extends React.HTMLAttributes<HTMLDivElement> {
+  children: React.ReactNode;
+  className?: string;
+}
+
+interface AlertDialogFooterProps extends React.HTMLAttributes<HTMLDivElement> {
+  children: React.ReactNode;
+  className?: string;
+}
+
+interface AlertDialogTitleProps extends React.HTMLAttributes<HTMLDivElement> {
+  children: React.ReactNode;
+  className?: string;
+}
+
+interface AlertDialogDescriptionProps
+  extends React.HTMLAttributes<HTMLDivElement> {
+  children: React.ReactNode;
+  className?: string;
+}
+
+interface AlertDialogCancelProps
+  extends React.HTMLAttributes<HTMLButtonElement> {
+  children: React.ReactNode;
+  onClick?: () => void;
+  className?: string;
+}
+
+interface AlertDialogActionProps
+  extends React.HTMLAttributes<HTMLButtonElement> {
+  children: React.ReactNode;
+  className?: string;
+}
+
+// ────────────────────────────────────────────────────────────────
+// ALERT DIALOG CONTEXT
+// ────────────────────────────────────────────────────────────────
 
 const AlertDialogContext = createContext<AlertDialogContextType | null>(null);
 
@@ -20,41 +74,35 @@ const useAlertDialogContext = () => {
     );
   return context;
 };
+
 // ────────────────────────────────────────────────────────────────
-// ALERT DIALOG PROVIDER
+// COMPONENTS
 // ────────────────────────────────────────────────────────────────
 
 /**
  * AlertDialog component that provides the AlertDialog context.
  * It manages the open/close state.
  */
-const AlertDialog = ({ children }: { children: React.ReactNode }) => {
+const AlertDialog: React.FC<AlertDialogProps> = ({ children, ...props }) => {
   const [isOpen, setIsOpen] = useState(false);
   const toggle = () => setIsOpen((prev) => !prev);
   return (
     <AlertDialogContext.Provider value={{ isOpen, toggle }}>
-      {children}
+      <div {...props}>{children}</div>
     </AlertDialogContext.Provider>
   );
 };
-
-// ────────────────────────────────────────────────────────────────
-// ALERT DIALOG TRIGGER
-// ────────────────────────────────────────────────────────────────
 
 /**
  * AlertDialogTrigger component. It supports an `asChild` prop so that the trigger
  * can be rendered as a custom element. If `asChild` is true, it clones the child
  * and injects an onClick handler to toggle the dialog.
  */
-const AlertDialogTrigger = ({
+const AlertDialogTrigger: React.FC<AlertDialogTriggerProps> = ({
   children,
   className = '',
   asChild = false,
   ...props
-}: React.HTMLAttributes<HTMLButtonElement> & {
-  asChild?: boolean;
-  children?: React.ReactNode | React.ReactElement<any>;
 }) => {
   const context = useAlertDialogContext();
 
@@ -66,35 +114,35 @@ const AlertDialogTrigger = ({
       return null;
     }
     // Clone the child element and inject the onClick handler.
-    return React.cloneElement(children, {
-      onClick: context.toggle,
-    });
+    return React.cloneElement(
+      children as React.ReactElement<{
+        onClick?: React.MouseEventHandler<HTMLElement>;
+      }>,
+      { onClick: context.toggle }
+    );
   }
 
   // If not using asChild, render the default Button.
   return (
-    <Button variant="outline" onClick={context.toggle} {...props}>
+    <Button
+      variant="outline"
+      className={className}
+      onClick={context.toggle}
+      {...props}
+    >
       {children}
     </Button>
   );
 };
 
-// ────────────────────────────────────────────────────────────────
-// ALERT DIALOG CONTENT (Header, Footer, Title, Description)
-// ────────────────────────────────────────────────────────────────
-
 /**
  * AlertDialogContent component. It conditionally renders its content based on
  * whether the dialog is open. When open, it displays a centered overlay.
  */
-const AlertDialogContent = ({
+const AlertDialogContent: React.FC<AlertDialogContentProps> = ({
   children,
   className = '',
   ...props
-}: {
-  children: React.ReactNode;
-  className?: any;
-  props?: any;
 }) => {
   const context = useAlertDialogContext();
   return context.isOpen ? (
@@ -114,14 +162,10 @@ const AlertDialogContent = ({
 /**
  * AlertDialogHeader component that renders the header section of the dialog.
  */
-const AlertDialogHeader = ({
+const AlertDialogHeader: React.FC<AlertDialogHeaderProps> = ({
   children,
   className = '',
   ...props
-}: {
-  children: React.ReactNode;
-  className?: any;
-  props?: any;
 }) => {
   return (
     <div className={`flex flex-col gap-2 ${className}`} {...props}>
@@ -133,14 +177,10 @@ const AlertDialogHeader = ({
 /**
  * AlertDialogFooter component that renders the footer section of the dialog.
  */
-const AlertDialogFooter = ({
+const AlertDialogFooter: React.FC<AlertDialogFooterProps> = ({
   children,
   className = '',
   ...props
-}: {
-  children: React.ReactNode;
-  className?: any;
-  props?: any;
 }) => {
   return (
     <div className={`self-end flex gap-4 ${className}`} {...props}>
@@ -152,14 +192,10 @@ const AlertDialogFooter = ({
 /**
  * AlertDialogTitle component that renders the title of the dialog.
  */
-const AlertDialogTitle = ({
+const AlertDialogTitle: React.FC<AlertDialogTitleProps> = ({
   children,
   className = '',
   ...props
-}: {
-  children: React.ReactNode;
-  className?: any;
-  props?: any;
 }) => {
   return (
     <div className={'h3 ' + className} {...props}>
@@ -171,14 +207,10 @@ const AlertDialogTitle = ({
 /**
  * AlertDialogDescription component that renders the description content.
  */
-const AlertDialogDescription = ({
+const AlertDialogDescription: React.FC<AlertDialogDescriptionProps> = ({
   children,
   className = '',
   ...props
-}: {
-  children: React.ReactNode;
-  className?: any;
-  props?: any;
 }) => {
   return (
     <div className={'p text-subtext ' + className} {...props}>
@@ -187,24 +219,15 @@ const AlertDialogDescription = ({
   );
 };
 
-// ────────────────────────────────────────────────────────────────
-// ALERT DIALOG CANCEL BUTTON
-// ────────────────────────────────────────────────────────────────
-
 /**
  * AlertDialogCancel component renders a cancel button. It automatically toggles
  * the dialog off when clicked.
  */
-const AlertDialogCancel = ({
+const AlertDialogCancel: React.FC<AlertDialogCancelProps> = ({
   children,
   className = '',
   onClick,
   ...props
-}: {
-  children: React.ReactNode;
-  onClick?: any;
-  className?: any;
-  props?: any;
 }) => {
   const context = useAlertDialogContext();
   return (
@@ -218,21 +241,13 @@ const AlertDialogCancel = ({
   );
 };
 
-// ────────────────────────────────────────────────────────────────
-// ALERT DIALOG ACTION BUTTON
-// ────────────────────────────────────────────────────────────────
-
 /**
  * AlertDialogAction component renders an action button.
  */
-const AlertDialogAction = ({
+const AlertDialogAction: React.FC<AlertDialogActionProps> = ({
   children,
   className = '',
   ...props
-}: {
-  children: React.ReactNode;
-  className?: any;
-  props?: any;
 }) => {
   return (
     <button

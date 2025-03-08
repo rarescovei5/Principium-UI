@@ -1,22 +1,35 @@
-const Checkbox = ({
-  checked,
-  disabled,
-  toggleChecked,
-  ...props
-}: React.HTMLAttributes<HTMLButtonElement> & {
+// ────────────────────────────────────────────────────────────────
+// PROP TYPES
+// ────────────────────────────────────────────────────────────────
+interface CheckboxProps extends React.HTMLAttributes<HTMLButtonElement> {
   checked: boolean;
   disabled?: boolean;
   toggleChecked: () => void;
+}
+
+// ────────────────────────────────────────────────────────────────
+// COMPONENTS
+// ────────────────────────────────────────────────────────────────
+
+const Checkbox: React.FC<CheckboxProps> = ({
+  checked,
+  disabled,
+  toggleChecked,
+  className = '',
+  ...props
 }) => {
   return (
     <button
-      className={`w-5 h-5 flex items-center justify-center transition-colors duration-150 rounded-lg ${
-        disabled
+      className={
+        `w-5 h-5 flex items-center justify-center transition-colors duration-150 rounded-lg ` +
+        (disabled
           ? 'cursor-not-allowed border-border border'
           : checked
           ? 'bg-white border-white border cursor-pointer'
-          : 'bg-transparent border-white border cursor-pointer'
-      }`}
+          : 'bg-transparent border-white border cursor-pointer') +
+        ' ' +
+        className
+      }
       onClick={toggleChecked}
       {...props}
     >
@@ -30,8 +43,8 @@ const Checkbox = ({
         <path
           d="M11.5 1L3.8 9L0.5 6"
           stroke="#111111"
-          stroke-linecap="round"
-          stroke-linejoin="round"
+          strokeLinecap="round"
+          strokeLinejoin="round"
         />
       </svg>
     </button>

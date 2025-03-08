@@ -1,4 +1,3 @@
-//Another unrefactorable BEAST!
 import {
   createContext,
   SetStateAction,
@@ -6,44 +5,80 @@ import {
   useEffect,
   useRef,
   useState,
+  useCallback,
 } from 'react';
 import { Button } from './Button';
 
-const CarouselContext = createContext<{
+// ────────────────────────────────────────────────────────────────
+// PROP TYPES
+// ────────────────────────────────────────────────────────────────
+
+interface NavButtonProps {
+  orientation: 'horizontal' | 'vertical';
+  onClick: () => void;
+  direction: 'prev' | 'next';
+  isEnabled: boolean;
+}
+interface CarouselProps extends React.HTMLAttributes<any> {
+  orientation?: 'horizontal' | 'vertical';
+  autoPlay?: number;
+}
+
+// ────────────────────────────────────────────────────────────────
+// CAROUSEL CONTEXT
+// ────────────────────────────────────────────────────────────────
+
+interface CarouselContextType {
   orientation: 'horizontal' | 'vertical';
   index: number;
   setMaxIndex: React.Dispatch<SetStateAction<number>>;
-} | null>(null);
+}
 
-const Carousel = ({
+const CarouselContext = createContext<CarouselContextType | null>(null);
+
+// Custom hook to consume CarouselContext safely
+const useCarouselContext = () => {
+  const context = useContext(CarouselContext);
+  if (!context) {
+    throw new Error('Carousel components must be used within a Carousel');
+  }
+  return context;
+};
+
+// ────────────────────────────────────────────────────────────────
+// COMPONENTS
+// ────────────────────────────────────────────────────────────────
+
+const Carousel: React.FC<CarouselProps> = ({
   children,
   orientation = 'horizontal',
-  className,
+  className = '',
   autoPlay = 0,
   ...props
-}: React.HTMLAttributes<any> & {
-  orientation?: 'horizontal' | 'vertical';
-  autoPlay?: number;
 }) => {
   const [index, setIndex] = useState(0);
   const [maxIndex, setMaxIndex] = useState(0);
 
-  const scroll = (direction: number) => {
-    setIndex((prev) => {
-      if (
-        (direction === -1 && !(prev > 0)) ||
-        (direction === 1 && !(prev < maxIndex))
-      ) {
-        return prev; // Prevent scrolling if already at boundary
-      }
+  // Scroll function for navigation (memoized to prevent re-creation)
+  const scroll = useCallback(
+    (direction: number) => {
+      setIndex((prev) => {
+        // Prevent scrolling if at boundary
+        if (
+          (direction === -1 && !(prev > 0)) ||
+          (direction === 1 && !(prev < maxIndex))
+        ) {
+          return prev;
+        }
+        return prev + direction;
+      });
+    },
+    [maxIndex]
+  );
 
-      const newIndex = prev + direction;
-      return newIndex;
-    });
-  };
+  // Auto-play effect if enabled
   useEffect(() => {
     if (!autoPlay) return;
-
     const handleAutoPlay = () => {
       if (index === maxIndex) {
         scroll(-maxIndex);
@@ -51,11 +86,9 @@ const Carousel = ({
         scroll(1);
       }
     };
-
     const interval = setInterval(handleAutoPlay, autoPlay);
-
     return () => clearInterval(interval);
-  }, [autoPlay, index, maxIndex]);
+  }, [autoPlay, index, maxIndex, scroll]);
 
   return (
     <CarouselContext.Provider value={{ orientation, index, setMaxIndex }}>
@@ -64,30 +97,25 @@ const Carousel = ({
           orientation={orientation}
           onClick={() => scroll(-1)}
           direction="prev"
-          disabled={index > 0}
+          isEnabled={index > 0}
         />
         {children}
         <NavButton
           orientation={orientation}
           onClick={() => scroll(1)}
           direction="next"
-          disabled={index < maxIndex}
+          isEnabled={index < maxIndex}
         />
       </div>
     </CarouselContext.Provider>
   );
 };
 
-const NavButton = ({
+const NavButton: React.FC<NavButtonProps> = ({
   orientation,
   onClick,
   direction,
-  disabled,
-}: {
-  orientation: 'horizontal' | 'vertical';
-  onClick: () => void;
-  direction: 'prev' | 'next';
-  disabled: boolean;
+  isEnabled,
 }) => {
   const isHorizontal = orientation === 'horizontal';
   const position =
@@ -110,10 +138,10 @@ const NavButton = ({
   return (
     <Button
       variant="outline"
-      className={`absolute  ${position}`}
+      className={`absolute ${position}`}
       onClick={onClick}
       icon
-      disabled={!disabled}
+      disabled={!isEnabled} // Invert isEnabled to set the Button's disabled prop
     >
       <svg
         className={`w-3 ${rotation}`}
@@ -130,49 +158,46 @@ const NavButton = ({
   );
 };
 
-const CarouselContent = ({
+const CarouselContent: React.FC<React.HTMLAttributes<HTMLDivElement>> = ({
   children,
-  className,
+  className = '',
   ...props
-}: React.HTMLAttributes<any>) => {
-  const context = useContext(CarouselContext);
+}) => {
+  const context = useCarouselContext();
   const containerRef = useRef<HTMLDivElement | null>(null);
   const carouselRef = useRef<HTMLDivElement | null>(null);
 
-  if (!context)
-    throw new Error('CarouselContent must be used inside of Carousel');
-
+  // Update maxIndex when children or orientation change
   useEffect(() => {
     if (containerRef.current && carouselRef.current) {
       const itemsCount = containerRef.current.children.length;
-
       const carouselSize =
         context.orientation === 'horizontal'
           ? carouselRef.current.offsetWidth
           : carouselRef.current.offsetHeight;
-
       const itemSize =
         context.orientation === 'horizontal'
           ? containerRef.current.children[0]?.getBoundingClientRect().width || 1
           : containerRef.current.children[0]?.getBoundingClientRect().height ||
             1;
-
       const visibleItems = Math.round(carouselSize / itemSize);
-
       const maxIndex = Math.max(itemsCount - visibleItems, 0);
       context.setMaxIndex(maxIndex);
     }
-  }, [children, context.setMaxIndex]);
+  }, [children, context.orientation, context.setMaxIndex]);
 
   return (
     <div ref={carouselRef} className="overflow-hidden flex-1">
       <div
         ref={containerRef}
-        className={`flex ${
-          context.orientation === 'horizontal'
+        className={
+          'flex ' +
+          (context.orientation === 'horizontal'
             ? 'flex-row -mx-2'
-            : 'flex-col -my-2'
-        } ${className}`}
+            : 'flex-col -my-2') +
+          ' ' +
+          className
+        }
         {...props}
       >
         {children}
@@ -181,15 +206,12 @@ const CarouselContent = ({
   );
 };
 
-const CarouselItem = ({
+const CarouselItem: React.FC<React.HTMLAttributes<HTMLDivElement>> = ({
   children,
   className = 'basis-full',
   ...props
-}: React.HTMLAttributes<HTMLDivElement>) => {
-  const context = useContext(CarouselContext);
-  if (!context)
-    throw new Error('CarouselContent must be used inside of Carousel');
-
+}) => {
+  const context = useCarouselContext();
   const transform =
     context.orientation === 'horizontal'
       ? `translateX(-${context.index * 100}%)`
@@ -197,9 +219,12 @@ const CarouselItem = ({
 
   return (
     <div
-      className={`min-w-0 min-h-0 transition-transform duration-300 ease-in-out shrink-0 grow-0 ${
-        context.orientation === 'horizontal' ? 'px-2' : 'py-2'
-      } ${className}`}
+      className={
+        'min-w-0 min-h-0 transition-transform duration-300 ease-in-out shrink-0 grow-0 ' +
+        (context.orientation === 'horizontal' ? 'px-2' : 'py-2') +
+        ' ' +
+        className
+      }
       style={{ transform }}
       {...props}
     >

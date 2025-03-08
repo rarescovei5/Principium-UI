@@ -1,50 +1,57 @@
-//Good luck refactoring this in the future :))
-import { SetStateAction, useState } from 'react';
+import { SetStateAction, useCallback, useState } from 'react';
 
-const Calendar = ({
-  selectedDate,
-  className = '',
-  setSelectedDate,
-}: {
+// ────────────────────────────────────────────────────────────────
+// PROP TYPES
+// ────────────────────────────────────────────────────────────────
+
+interface CalendarProps {
   className?: string;
   selectedDate: Date;
   setSelectedDate: React.Dispatch<SetStateAction<Date>>;
+}
+
+// ────────────────────────────────────────────────────────────────
+// CALENDAR COMPONENT
+// ────────────────────────────────────────────────────────────────
+
+const Calendar: React.FC<CalendarProps> = ({
+  selectedDate,
+  className = '',
+  setSelectedDate,
 }) => {
-  // State for the current month/year we’re displaying
-  const [currentDate, setCurrentDate] = useState(new Date());
+  // State for the current month/year we’re displaying (initialized lazily)
+  const [currentDate, setCurrentDate] = useState(() => new Date());
 
-  // Helper function to check if two dates fall on the same calendar day
-  function isSameDay(d1: Date, d2: Date) {
-    return (
-      d1.getFullYear() === d2.getFullYear() &&
-      d1.getMonth() === d2.getMonth() &&
-      d1.getDate() === d2.getDate()
-    );
-  }
-
-  // Today's date for highlighting
+  // Today's date for highlighting purposes
   const today = new Date();
 
-  // Generate a matrix of dates for the current month, including leading/trailing days
+  // Generate a matrix of dates for the current month (including leading/trailing days)
   const calendarDates = generateCalendarDates(currentDate);
 
+  // Helper function to split an array into chunks of a given size
   function chunkArray<T>(array: T[], size: number): T[][] {
     return Array.from({ length: Math.ceil(array.length / size) }, (_, i) =>
       array.slice(i * size, i * size + size)
     );
   }
-  // Handlers for navigating months
-  const goToPrevMonth = () => {
-    setCurrentDate(
-      new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1)
-    );
-  };
 
-  const goToNextMonth = () => {
+  // ────────────────────────────────────────────────
+  // Handlers for navigating months using useCallback with functional updates
+  // ────────────────────────────────────────────────
+
+  // Navigate to the previous month without needing currentDate as a dependency.
+  const goToPrevMonth = useCallback(() => {
     setCurrentDate(
-      new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1)
+      (prev) => new Date(prev.getFullYear(), prev.getMonth() - 1, 1)
     );
-  };
+  }, []);
+
+  // Navigate to the next month without needing currentDate as a dependency.
+  const goToNextMonth = useCallback(() => {
+    setCurrentDate(
+      (prev) => new Date(prev.getFullYear(), prev.getMonth() + 1, 1)
+    );
+  }, []);
 
   return (
     <div
@@ -53,7 +60,7 @@ const Calendar = ({
         className
       }
     >
-      {/* Month/Year Title */}
+      {/* Month/Year Title and Navigation Buttons */}
       <div className="flex justify-between items-center mb-4">
         <button
           className="w-10 h-10 border hover:bg-border transition-colors duration-150 border-border rounded-lg flex items-center justify-center cursor-pointer"
@@ -144,13 +151,26 @@ const Calendar = ({
 
 export default Calendar;
 
+// ────────────────────────────────────────────────────────────────────
+// Utility Functions
+// ────────────────────────────────────────────────────────────────────
+
+/**
+ * Checks if two Date objects represent the same calendar day.
+ */
+function isSameDay(d1: Date, d2: Date) {
+  return (
+    d1.getFullYear() === d2.getFullYear() &&
+    d1.getMonth() === d2.getMonth() &&
+    d1.getDate() === d2.getDate()
+  );
+}
+
 /**
  * generateCalendarDates:
  * Generates an array of Date objects representing the days
- * in the current month plus leading/trailing days to fill out
- * a 6-row grid.
+ * in the current month plus leading/trailing days to fill out a 6-row grid.
  */
-
 function generateCalendarDates(baseDate: Date): Date[] {
   const year = baseDate.getFullYear();
   const month = baseDate.getMonth();
