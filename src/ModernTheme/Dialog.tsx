@@ -1,51 +1,104 @@
 import React, {
   createContext,
-  SetStateAction,
   useContext,
-  useEffect,
   useState,
+  useEffect,
+  useCallback,
+  useMemo,
+  useRef,
+  FC,
+  ReactNode,
 } from 'react';
 import { Button } from './Button';
+
+// ────────────────────────────────────────────────────────────────
+// PROP TYPES
+// ────────────────────────────────────────────────────────────────
 
 interface DialogContextType {
   isOpen: boolean;
   toggle: () => void;
 }
-const DialogContext = createContext<DialogContextType>({
-  isOpen: false,
-  toggle: () => {},
-});
 
-const Dialog = ({
-  children,
-  open,
-  toggleOpen,
-}: {
-  children: React.ReactNode;
+interface DialogProps extends React.HTMLAttributes<HTMLDivElement> {
+  children: ReactNode;
   open?: boolean;
   toggleOpen?: () => void;
-}) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const toggle = () => setIsOpen((prev) => !prev);
+}
 
-  const value = !(open && toggleOpen)
-    ? { isOpen, toggle }
-    : { isOpen: open, toggle: toggleOpen };
+interface DialogTriggerProps
+  extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  asChild?: boolean;
+  children: ReactNode | React.ReactElement<any>;
+  className?: string;
+}
+
+interface DialogContentProps extends React.HTMLAttributes<HTMLDivElement> {
+  children: ReactNode;
+  className?: string;
+}
+
+interface DialogSectionProps extends React.HTMLAttributes<HTMLDivElement> {
+  children: ReactNode;
+  className?: string;
+}
+
+interface DialogButtonProps
+  extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  children: ReactNode;
+  className?: string;
+}
+
+// ────────────────────────────────────────────────────────────────
+// CONTEXT
+// ────────────────────────────────────────────────────────────────
+
+const DialogContext = createContext<DialogContextType | null>(null);
+
+const useDialogContext = () => {
+  const context = useContext(DialogContext);
+  if (!context)
+    throw new Error('Dialog components must be used within a Dialog');
+  return context;
+};
+
+// ────────────────────────────────────────────────────────────────
+// COMPONENTS
+// ────────────────────────────────────────────────────────────────
+
+/**
+ * Dialog component that provides context for its children.
+ * It manages the open/close state.
+ */
+const Dialog: FC<DialogProps> = ({ children, open, toggleOpen, ...props }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const toggle = useCallback(() => setIsOpen((prev) => !prev), []);
+
+  // Use provided open state if controlled, otherwise use internal state.
+  const contextValue = useMemo(() => {
+    return !(open && toggleOpen)
+      ? { isOpen, toggle }
+      : { isOpen: open!, toggle: toggleOpen! };
+  }, [open, toggleOpen, isOpen, toggle]);
+
   return (
-    <DialogContext.Provider value={value}>{children}</DialogContext.Provider>
+    <DialogContext.Provider value={contextValue}>
+      <div {...props}>{children}</div>
+    </DialogContext.Provider>
   );
 };
 
-const DialogTrigger = ({
+/**
+ * DialogTrigger component that toggles the dialog.
+ * Supports an `asChild` prop to render a custom element.
+ */
+const DialogTrigger: FC<DialogTriggerProps> = ({
   children,
-  className,
+  className = '',
   asChild = false,
   ...props
-}: React.HTMLAttributes<HTMLButtonElement> & {
-  asChild?: boolean;
-  children: React.ReactNode | React.ReactElement<any>;
 }) => {
-  const context = useContext(DialogContext);
+  const context = useDialogContext();
 
   if (asChild) {
     if (!React.isValidElement(children)) {
@@ -54,48 +107,63 @@ const DialogTrigger = ({
       );
       return null;
     }
-    return React.cloneElement(children, {
-      onClick: context.toggle,
-    });
+    return React.cloneElement(
+      children as React.ReactElement<{
+        onClick?: React.MouseEventHandler<HTMLElement>;
+      }>,
+      { onClick: context.toggle }
+    );
   }
 
   return (
-    <Button variant="outline" onClick={context.toggle} {...props}>
+    <Button
+      variant="outline"
+      onClick={context.toggle}
+      className={className}
+      {...props}
+    >
       {children}
     </Button>
   );
 };
 
-const DialogContent = ({
+/**
+ * DialogContent component that conditionally renders its content.
+ * It also closes the dialog when a click is detected outside the content.
+ */
+const DialogContent: FC<DialogContentProps> = ({
   children,
-  className,
+  className = '',
   ...props
-}: React.HTMLAttributes<HTMLDivElement>) => {
-  const context = useContext(DialogContext);
-  useEffect(() => {
-    const handleOutside = (e: MouseEvent) => {
+}) => {
+  const context = useDialogContext();
+  const contentRef = useRef<HTMLDivElement>(null);
+
+  const handleOutsideClick = useCallback(
+    (e: MouseEvent) => {
       if (!context.isOpen) return;
-
-      const target = e.target as Node;
-
-      if (!document.getElementById('Dialog-Content')?.contains(target)) {
+      if (
+        contentRef.current &&
+        !contentRef.current.contains(e.target as Node)
+      ) {
         context.toggle();
       }
-    };
+    },
+    [context]
+  );
 
-    document.addEventListener('mousedown', handleOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleOutside);
-    };
-  }, [context.isOpen]);
+  useEffect(() => {
+    document.addEventListener('mousedown', handleOutsideClick);
+    return () => document.removeEventListener('mousedown', handleOutsideClick);
+  }, [handleOutsideClick]);
+
   return context.isOpen ? (
     <div className="fixed z-1000 inset-0 bg-bg/75 backdrop-opacity-5 bg-opacity-5 grid place-content-center">
       <div
-        className={
-          'w-2xl relative bg-bg flex flex-col gap-4 border border-border rounded-lg ' +
-          className
-        }
+        ref={contentRef}
         id="Dialog-Content"
+        className={`w-2xl relative bg-bg flex flex-col gap-4 border border-border rounded-lg ${className}`}
+        {...props}
       >
         <button
           className="flex items-center justify-center w-6 h-6 absolute top-3 right-3 cursor-pointer rounded-lg hover:bg-surface"
@@ -116,50 +184,54 @@ const DialogContent = ({
         {children}
       </div>
     </div>
-  ) : (
-    <></>
-  );
+  ) : null;
 };
 
-const DialogHeader = ({
+// ────────────────────────────────────────────────────────────────
+// DIALOG SECTION COMPONENTS (HEADER, FOOTER, TITLE, DESCRIPTION)
+// ────────────────────────────────────────────────────────────────
+
+const DialogHeader: FC<DialogSectionProps> = ({
   children,
-  className,
+  className = '',
   ...props
-}: React.HTMLAttributes<HTMLDivElement>) => {
+}) => {
   return (
-    <div className="flex flex-col gap-2" {...props}>
-      {children}
-    </div>
-  );
-};
-const DialogFooter = ({
-  children,
-  className,
-  ...props
-}: React.HTMLAttributes<HTMLDivElement>) => {
-  return (
-    <div className="self-end flex gap-4" {...props}>
+    <div className={`flex flex-col gap-2 ${className}`} {...props}>
       {children}
     </div>
   );
 };
 
-const DialogTitle = ({
+const DialogFooter: FC<DialogSectionProps> = ({
   children,
-  className,
+  className = '',
   ...props
-}: React.HTMLAttributes<HTMLDivElement>) => {
+}) => {
+  return (
+    <div className={`self-end flex gap-4 ${className}`} {...props}>
+      {children}
+    </div>
+  );
+};
+
+const DialogTitle: FC<DialogSectionProps> = ({
+  children,
+  className = '',
+  ...props
+}) => {
   return (
     <div className={'h3 ' + className} {...props}>
       {children}
     </div>
   );
 };
-const DialogDescription = ({
+
+const DialogDescription: FC<DialogSectionProps> = ({
   children,
-  className,
+  className = '',
   ...props
-}: React.HTMLAttributes<HTMLDivElement>) => {
+}) => {
   return (
     <div className={'p text-subtext ' + className} {...props}>
       {children}
@@ -167,16 +239,19 @@ const DialogDescription = ({
   );
 };
 
-const DialogClose = ({
+// ────────────────────────────────────────────────────────────────
+// DIALOG BUTTON COMPONENTS (CLOSE & ACTION)
+// ────────────────────────────────────────────────────────────────
+
+const DialogClose: FC<DialogButtonProps> = ({
   children,
-  className,
-  onClick,
+  className = '',
   ...props
-}: React.ButtonHTMLAttributes<HTMLButtonElement>) => {
-  const context = useContext(DialogContext);
+}) => {
+  const context = useDialogContext();
   return (
     <button
-      className="px-6 py-2 rounded-lg border border-border hover:bg-border cursor-pointer transition-colors duration-150 p"
+      className={`px-6 py-2 rounded-lg border border-border hover:bg-border cursor-pointer transition-colors duration-150 p ${className}`}
       onClick={context.toggle}
       {...props}
     >
@@ -184,20 +259,22 @@ const DialogClose = ({
     </button>
   );
 };
-const DialogAction = ({
+
+const DialogAction: FC<DialogButtonProps> = ({
   children,
-  className,
+  className = '',
   ...props
-}: React.ButtonHTMLAttributes<HTMLButtonElement>) => {
+}) => {
   return (
     <button
-      className="px-6 py-2 rounded-lg text-bg bg-white cursor-pointer transition-colors duration-150 hover:bg-white/90 p"
+      className={`px-6 py-2 rounded-lg text-bg bg-white cursor-pointer transition-colors duration-150 hover:bg-white/90 p ${className}`}
       {...props}
     >
       {children}
     </button>
   );
 };
+
 export {
   Dialog,
   DialogTrigger,

@@ -1,36 +1,95 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useCallback,
+  FC,
+  ReactNode,
+  ReactElement,
+} from 'react';
 import { Button } from './Button';
+
+// ────────────────────────────────────────────────────────────────
+// PROP TYPES
+// ────────────────────────────────────────────────────────────────
 
 interface ToastContextType {
   isOpen: boolean;
   toggle: () => void;
 }
+
+interface ToastProps extends React.HTMLAttributes<HTMLDivElement> {
+  children: ReactNode;
+  className?: string;
+}
+
+interface ToastTriggerProps extends React.HTMLAttributes<HTMLButtonElement> {
+  asChild?: boolean;
+  children: ReactNode | ReactElement<any>;
+  className?: string;
+}
+
+interface ToastContentProps extends React.HTMLAttributes<HTMLDivElement> {
+  children: ReactNode;
+  className?: string;
+}
+
+interface ToastTitleProps extends React.HTMLAttributes<HTMLDivElement> {
+  children: ReactNode;
+  className?: string;
+}
+
+interface ToastDescriptionProps extends React.HTMLAttributes<HTMLDivElement> {
+  children: ReactNode;
+  className?: string;
+}
+
+interface ToastActionProps extends React.HTMLAttributes<HTMLButtonElement> {
+  asChild?: boolean;
+  children: ReactNode | ReactElement<any>;
+  className?: string;
+}
+
+// ────────────────────────────────────────────────────────────────
+// CONTEXT
+// ────────────────────────────────────────────────────────────────
+
 const ToastContext = createContext<ToastContextType | null>(null);
 
-const Toast: React.FC<React.HTMLAttributes<HTMLDivElement>> = ({
-  children,
-}) => {
+const useToastContext = () => {
+  const context = useContext(ToastContext);
+  if (!context) throw new Error('Toast components must be used within a Toast');
+  return context;
+};
+
+// ────────────────────────────────────────────────────────────────
+// TOAST COMPONENT
+// ────────────────────────────────────────────────────────────────
+
+const Toast: FC<ToastProps> = ({ children, className = '', ...props }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const toggle = () => setIsOpen((prev) => !prev);
+  const toggle = useCallback(() => setIsOpen((prev) => !prev), []);
 
   return (
     <ToastContext.Provider value={{ isOpen, toggle }}>
-      {children}
+      <div className={'relative ' + className} {...props}>
+        {children}
+      </div>
     </ToastContext.Provider>
   );
 };
-const ToastTrigger = ({
+
+// ────────────────────────────────────────────────────────────────
+// TOAST TRIGGER COMPONENT
+// ────────────────────────────────────────────────────────────────
+
+const ToastTrigger: FC<ToastTriggerProps> = ({
   children,
-  className,
+  className = '',
   asChild = false,
   ...props
-}: React.HTMLAttributes<HTMLButtonElement> & {
-  asChild?: boolean;
-  children?: React.ReactNode | React.ReactElement<any>;
 }) => {
-  const context = useContext(ToastContext);
-  if (!context)
-    throw new Error('ToastTrigger must be used inside Toast component');
+  const context = useToastContext();
 
   if (asChild) {
     if (!React.isValidElement(children)) {
@@ -39,29 +98,37 @@ const ToastTrigger = ({
       );
       return null;
     }
-    return React.cloneElement(children, {
-      onClick: context.toggle,
-    });
+    return React.cloneElement(
+      children as React.ReactElement<{
+        onClick?: React.MouseEventHandler<HTMLElement>;
+      }>,
+      { onClick: context.toggle }
+    );
   }
 
   return (
-    <Button variant="outline" onClick={context.toggle} {...props}>
+    <Button
+      variant="outline"
+      onClick={context.toggle}
+      className={className}
+      {...props}
+    >
       {children}
     </Button>
   );
 };
-const ToastAction = ({
+
+// ────────────────────────────────────────────────────────────────
+// TOAST ACTION COMPONENT
+// ────────────────────────────────────────────────────────────────
+
+const ToastAction: FC<ToastActionProps> = ({
   children,
-  className,
+  className = '',
   asChild = false,
   ...props
-}: React.HTMLAttributes<HTMLButtonElement> & {
-  asChild?: boolean;
-  children?: React.ReactNode | React.ReactElement<any>;
 }) => {
-  const context = useContext(ToastContext);
-  if (!context)
-    throw new Error('ToastAction must be used inside Toast component');
+  const context = useToastContext();
 
   if (asChild) {
     if (!React.isValidElement(children)) {
@@ -70,27 +137,36 @@ const ToastAction = ({
       );
       return null;
     }
-    return React.cloneElement(children, {
-      onClick: context.toggle,
-    });
+    return React.cloneElement(
+      children as React.ReactElement<{
+        onClick?: React.MouseEventHandler<HTMLElement>;
+      }>,
+      { onClick: context.toggle }
+    );
   }
 
   return (
-    <div style={{ gridArea: 'TA' }} className="grid place-content-center mx-6">
+    <div
+      style={{ gridArea: 'TA' }}
+      className={'grid place-content-center mx-6 ' + className}
+    >
       <Button variant="outline" {...props}>
         {children}
       </Button>
     </div>
   );
 };
-const ToastContent: React.FC<React.HTMLAttributes<HTMLDivElement>> = ({
-  children,
-  className,
-}) => {
-  const context = useContext(ToastContext);
-  if (!context)
-    throw new Error('ToastTrigger must be used inside Toast component');
 
+// ────────────────────────────────────────────────────────────────
+// TOAST CONTENT COMPONENT
+// ────────────────────────────────────────────────────────────────
+
+const ToastContent: FC<ToastContentProps> = ({
+  children,
+  className = '',
+  ...props
+}) => {
+  const context = useToastContext();
   return context.isOpen ? (
     <div
       style={{
@@ -105,6 +181,7 @@ const ToastContent: React.FC<React.HTMLAttributes<HTMLDivElement>> = ({
         'fixed min-w-100 p-6 right-4 bottom-4 rounded-lg border border-border ' +
         className
       }
+      {...props}
     >
       <button
         className="flex items-center justify-center w-6 h-6 absolute top-3 right-3 cursor-pointer rounded-lg group"
@@ -120,27 +197,40 @@ const ToastContent: React.FC<React.HTMLAttributes<HTMLDivElement>> = ({
       </button>
       {children}
     </div>
-  ) : (
-    <></>
-  );
+  ) : null;
 };
 
-const ToastTitle: React.FC<React.HTMLAttributes<HTMLDivElement>> = ({
-  className,
+// ────────────────────────────────────────────────────────────────
+// TOAST TITLE COMPONENT
+// ────────────────────────────────────────────────────────────────
+
+const ToastTitle: FC<ToastTitleProps> = ({
   children,
+  className = '',
+  ...props
 }) => {
   return (
-    <div style={{ gridArea: 'TT' }} className={'p ' + className}>
+    <div style={{ gridArea: 'TT' }} className={'p ' + className} {...props}>
       {children}
     </div>
   );
 };
-const ToastDescription: React.FC<React.HTMLAttributes<HTMLDivElement>> = ({
-  className,
+
+// ────────────────────────────────────────────────────────────────
+// TOAST DESCRIPTION COMPONENT
+// ────────────────────────────────────────────────────────────────
+
+const ToastDescription: FC<ToastDescriptionProps> = ({
   children,
+  className = '',
+  ...props
 }) => {
   return (
-    <div style={{ gridArea: 'TD' }} className={'p text-subtext ' + className}>
+    <div
+      style={{ gridArea: 'TD' }}
+      className={'p text-subtext ' + className}
+      {...props}
+    >
       {children}
     </div>
   );

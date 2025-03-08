@@ -89,9 +89,14 @@ const CollapsibleTrigger: React.FC<CollapsibleTriggerProps> = ({
       );
       return null;
     }
-    return React.cloneElement(children as any, {
-      onClick: context.toggle,
-    });
+    return React.cloneElement(
+      children as React.ReactElement<{
+        onClick?: React.MouseEventHandler<HTMLElement>;
+      }>,
+      {
+        onClick: context.toggle,
+      }
+    );
   }
 
   return (

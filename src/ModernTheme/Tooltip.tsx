@@ -1,5 +1,19 @@
-import React, { createContext, useContext, useRef, useState } from 'react';
+import React, {
+  createContext,
+  useContext,
+  useRef,
+  useState,
+  useCallback,
+  useMemo,
+  FC,
+  ReactNode,
+  ReactElement,
+} from 'react';
 import { Button } from './Button';
+
+// ────────────────────────────────────────────────────────────────
+// PROP TYPES
+// ────────────────────────────────────────────────────────────────
 
 interface TooltipContextType {
   isOpen: boolean;
@@ -9,28 +23,51 @@ interface TooltipContextType {
   onContentLeave: () => void;
 }
 
+interface TooltipProps extends React.HTMLAttributes<HTMLDivElement> {
+  children: ReactNode;
+  className?: string;
+}
+
+interface TooltipTriggerProps extends React.HTMLAttributes<HTMLButtonElement> {
+  asChild?: boolean;
+  children: ReactNode | ReactElement<any>;
+  className?: string;
+}
+
+interface TooltipContentProps extends React.HTMLAttributes<HTMLDivElement> {
+  children: ReactNode;
+  className?: string;
+}
+
+// ────────────────────────────────────────────────────────────────
+// CONTEXT
+// ────────────────────────────────────────────────────────────────
+
 const TooltipContext = createContext<TooltipContextType | null>(null);
 
-const Tooltip: React.FC<React.HTMLAttributes<HTMLDivElement>> = ({
-  children,
-  className,
-  ...props
-}) => {
+const useTooltipContext = () => {
+  const context = useContext(TooltipContext);
+  if (!context)
+    throw new Error('Tooltip components must be used within a Tooltip');
+  return context;
+};
+
+// ────────────────────────────────────────────────────────────────
+// TOOLTIP COMPONENT
+// ────────────────────────────────────────────────────────────────
+
+const Tooltip: FC<TooltipProps> = ({ children, className = '', ...props }) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
-  // Track whether the trigger or content is hovered
   const triggerHovered = useRef(false);
   const contentHovered = useRef(false);
-  // A shared timeout ref for both showing and hiding
   const timeoutRef = useRef<number | null>(null);
 
-  const updateOpenState = () => {
+  const updateOpenState = useCallback(() => {
     if (triggerHovered.current || contentHovered.current) {
-      // If hovered over trigger or content, clear any pending hide
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);
         timeoutRef.current = null;
       }
-      // Only open if not already open
       if (!isOpen) {
         timeoutRef.current = window.setTimeout(() => {
           setIsOpen(true);
@@ -38,7 +75,6 @@ const Tooltip: React.FC<React.HTMLAttributes<HTMLDivElement>> = ({
         }, 300);
       }
     } else {
-      // Neither hovered: clear any pending open then schedule close
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);
         timeoutRef.current = null;
@@ -48,38 +84,41 @@ const Tooltip: React.FC<React.HTMLAttributes<HTMLDivElement>> = ({
         timeoutRef.current = null;
       }, 150);
     }
-  };
+  }, [isOpen]);
 
-  const onTriggerEnter = () => {
+  const onTriggerEnter = useCallback(() => {
     triggerHovered.current = true;
     updateOpenState();
-  };
+  }, [updateOpenState]);
 
-  const onTriggerLeave = () => {
+  const onTriggerLeave = useCallback(() => {
     triggerHovered.current = false;
     updateOpenState();
-  };
+  }, [updateOpenState]);
 
-  const onContentEnter = () => {
+  const onContentEnter = useCallback(() => {
     contentHovered.current = true;
     updateOpenState();
-  };
+  }, [updateOpenState]);
 
-  const onContentLeave = () => {
+  const onContentLeave = useCallback(() => {
     contentHovered.current = false;
     updateOpenState();
-  };
+  }, [updateOpenState]);
+
+  const contextValue = useMemo(
+    () => ({
+      isOpen,
+      onTriggerEnter,
+      onTriggerLeave,
+      onContentEnter,
+      onContentLeave,
+    }),
+    [isOpen, onTriggerEnter, onTriggerLeave, onContentEnter, onContentLeave]
+  );
 
   return (
-    <TooltipContext.Provider
-      value={{
-        isOpen,
-        onTriggerEnter,
-        onTriggerLeave,
-        onContentEnter,
-        onContentLeave,
-      }}
-    >
+    <TooltipContext.Provider value={contextValue}>
       <div className={'relative inline ' + className} {...props}>
         {children}
       </div>
@@ -87,21 +126,17 @@ const Tooltip: React.FC<React.HTMLAttributes<HTMLDivElement>> = ({
   );
 };
 
-interface TooltipTriggerProps extends React.HTMLAttributes<HTMLButtonElement> {
-  asChild?: boolean;
-  children: React.ReactNode | React.ReactElement<any>;
-}
+// ────────────────────────────────────────────────────────────────
+// TOOLTIP TRIGGER COMPONENT
+// ────────────────────────────────────────────────────────────────
 
-const TooltipTrigger: React.FC<TooltipTriggerProps> = ({
+const TooltipTrigger: FC<TooltipTriggerProps> = ({
   children,
   asChild = false,
+  className = '',
   ...props
 }) => {
-  const context = useContext(TooltipContext);
-  if (!context) {
-    throw new Error('TooltipTrigger must be used within a Tooltip component.');
-  }
-
+  const context = useTooltipContext();
   const triggerProps = {
     onMouseEnter: context.onTriggerEnter,
     onMouseLeave: context.onTriggerLeave,
@@ -118,23 +153,24 @@ const TooltipTrigger: React.FC<TooltipTriggerProps> = ({
     return React.cloneElement(children, triggerProps);
   }
 
-  return <Button {...triggerProps}>{children}</Button>;
+  return (
+    <Button {...triggerProps} className={className}>
+      {children}
+    </Button>
+  );
 };
 
-const TooltipContent: React.FC<React.HTMLAttributes<HTMLDivElement>> = ({
+// ────────────────────────────────────────────────────────────────
+// TOOLTIP CONTENT COMPONENT
+// ────────────────────────────────────────────────────────────────
+
+const TooltipContent: FC<TooltipContentProps> = ({
   children,
-  className,
+  className = '',
   ...props
 }) => {
-  const context = useContext(TooltipContext);
-  if (!context) {
-    console.error('TooltipContent must be used within a Tooltip component.');
-    return null;
-  }
-
-  // Render nothing if not open
+  const context = useTooltipContext();
   if (!context.isOpen) return null;
-
   return (
     <div
       className={

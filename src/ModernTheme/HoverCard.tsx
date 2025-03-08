@@ -1,5 +1,19 @@
-import React, { createContext, useContext, useRef, useState } from 'react';
+import React, {
+  createContext,
+  useContext,
+  useRef,
+  useState,
+  useCallback,
+  useMemo,
+  FC,
+  ReactNode,
+  ReactElement,
+} from 'react';
 import { Button } from './Button';
+
+// ────────────────────────────────────────────────────────────────
+// PROP TYPES
+// ────────────────────────────────────────────────────────────────
 
 interface HoverCardContextType {
   isOpen: boolean;
@@ -9,28 +23,64 @@ interface HoverCardContextType {
   onContentLeave: () => void;
 }
 
+interface HoverCardProps extends React.HTMLAttributes<HTMLDivElement> {
+  children: ReactNode;
+  className?: string;
+}
+
+interface HoverCardTriggerProps
+  extends React.HTMLAttributes<HTMLButtonElement> {
+  asChild?: boolean;
+  children: ReactNode | ReactElement<any>;
+  className?: string;
+}
+
+interface HoverCardContentProps extends React.HTMLAttributes<HTMLDivElement> {
+  children: ReactNode;
+  className?: string;
+}
+
+// ────────────────────────────────────────────────────────────────
+// CONTEXT
+// ────────────────────────────────────────────────────────────────
+
 const HoverCardContext = createContext<HoverCardContextType | null>(null);
 
-const HoverCard: React.FC<React.HTMLAttributes<HTMLDivElement>> = ({
+const useHoverCardContext = () => {
+  const context = useContext(HoverCardContext);
+  if (!context)
+    throw new Error('HoverCard components must be used within a HoverCard');
+  return context;
+};
+
+// ────────────────────────────────────────────────────────────────
+// HOVER CARD COMPONENT
+// ────────────────────────────────────────────────────────────────
+
+/**
+ * HoverCard provides context to its children and manages hover state.
+ */
+const HoverCard: FC<HoverCardProps> = ({
   children,
-  className,
+  className = '',
   ...props
 }) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   // Track whether the trigger or content is hovered
   const triggerHovered = useRef(false);
   const contentHovered = useRef(false);
-  // A shared timeout ref for both showing and hiding
+  // Shared timeout ref for both showing and hiding
   const timeoutRef = useRef<number | null>(null);
 
-  const updateOpenState = () => {
+  // Memoized function to update open state based on hover status.
+  const updateOpenState = useCallback(() => {
     if (triggerHovered.current || contentHovered.current) {
-      // If hovered over trigger or content, clear any pending hide
+      // If hovered, clear any pending hide timeout.
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);
         timeoutRef.current = null;
       }
-      // Only open if not already open
+      // Open if not already open.
       if (!isOpen) {
         timeoutRef.current = window.setTimeout(() => {
           setIsOpen(true);
@@ -38,7 +88,7 @@ const HoverCard: React.FC<React.HTMLAttributes<HTMLDivElement>> = ({
         }, 300);
       }
     } else {
-      // Neither hovered: clear any pending open then schedule close
+      // If not hovered, clear any pending open timeout.
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);
         timeoutRef.current = null;
@@ -48,38 +98,43 @@ const HoverCard: React.FC<React.HTMLAttributes<HTMLDivElement>> = ({
         timeoutRef.current = null;
       }, 300);
     }
-  };
+  }, [isOpen]);
 
-  const onTriggerEnter = () => {
+  // Memoized event handlers.
+  const onTriggerEnter = useCallback(() => {
     triggerHovered.current = true;
     updateOpenState();
-  };
+  }, [updateOpenState]);
 
-  const onTriggerLeave = () => {
+  const onTriggerLeave = useCallback(() => {
     triggerHovered.current = false;
     updateOpenState();
-  };
+  }, [updateOpenState]);
 
-  const onContentEnter = () => {
+  const onContentEnter = useCallback(() => {
     contentHovered.current = true;
     updateOpenState();
-  };
+  }, [updateOpenState]);
 
-  const onContentLeave = () => {
+  const onContentLeave = useCallback(() => {
     contentHovered.current = false;
     updateOpenState();
-  };
+  }, [updateOpenState]);
+
+  // Memoize the context value.
+  const contextValue = useMemo(
+    () => ({
+      isOpen,
+      onTriggerEnter,
+      onTriggerLeave,
+      onContentEnter,
+      onContentLeave,
+    }),
+    [isOpen, onTriggerEnter, onTriggerLeave, onContentEnter, onContentLeave]
+  );
 
   return (
-    <HoverCardContext.Provider
-      value={{
-        isOpen,
-        onTriggerEnter,
-        onTriggerLeave,
-        onContentEnter,
-        onContentLeave,
-      }}
-    >
+    <HoverCardContext.Provider value={contextValue}>
       <div className={'relative ' + className} {...props}>
         {children}
       </div>
@@ -87,23 +142,20 @@ const HoverCard: React.FC<React.HTMLAttributes<HTMLDivElement>> = ({
   );
 };
 
-interface HoverCardTriggerProps
-  extends React.HTMLAttributes<HTMLButtonElement> {
-  asChild?: boolean;
-  children: React.ReactNode | React.ReactElement<any>;
-}
+// ────────────────────────────────────────────────────────────────
+// HOVER CARD TRIGGER COMPONENT
+// ────────────────────────────────────────────────────────────────
 
-const HoverCardTrigger: React.FC<HoverCardTriggerProps> = ({
+/**
+ * HoverCardTrigger listens for mouse enter/leave events to control the hover state.
+ */
+const HoverCardTrigger: FC<HoverCardTriggerProps> = ({
   children,
   asChild = false,
+  className = '',
   ...props
 }) => {
-  const context = useContext(HoverCardContext);
-  if (!context) {
-    throw new Error(
-      'HoverCardTrigger must be used within a HoverCard component.'
-    );
-  }
+  const context = useHoverCardContext();
 
   const triggerProps = {
     onMouseEnter: context.onTriggerEnter,
@@ -124,12 +176,19 @@ const HoverCardTrigger: React.FC<HoverCardTriggerProps> = ({
   return <Button {...triggerProps}>{children}</Button>;
 };
 
-const HoverCardContent: React.FC<React.HTMLAttributes<HTMLDivElement>> = ({
+// ────────────────────────────────────────────────────────────────
+// HOVER CARD CONTENT COMPONENT
+// ────────────────────────────────────────────────────────────────
+
+/**
+ * HoverCardContent renders the card's content when hovered.
+ */
+const HoverCardContent: FC<HoverCardContentProps> = ({
   children,
-  className,
+  className = '',
   ...props
 }) => {
-  const context = useContext(HoverCardContext);
+  const context = useHoverCardContext();
   if (!context) {
     console.error(
       'HoverCardContent must be used within a HoverCard component.'
@@ -137,7 +196,7 @@ const HoverCardContent: React.FC<React.HTMLAttributes<HTMLDivElement>> = ({
     return null;
   }
 
-  // Render nothing if not open
+  // Only render content when the hover card is open.
   if (!context.isOpen) return null;
 
   return (
