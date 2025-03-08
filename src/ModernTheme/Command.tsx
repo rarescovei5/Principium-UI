@@ -1,8 +1,8 @@
 import React, {
   createContext,
-  SetStateAction,
   useContext,
   useState,
+  useMemo,
   ReactNode,
   ReactElement,
   FC,
@@ -15,12 +15,21 @@ import { Dialog, DialogContent } from './Dialog';
 
 type CommandContextType = {
   selectedIndex: number | null;
-  setSelectedIndex: React.Dispatch<SetStateAction<number | null>>;
+  setSelectedIndex: React.Dispatch<React.SetStateAction<number | null>>;
   searchQuery: string;
-  setSearchQuery: React.Dispatch<SetStateAction<string>>;
+  setSearchQuery: React.Dispatch<React.SetStateAction<string>>;
 };
 
 const CommandContext = createContext<CommandContextType | null>(null);
+
+const useCommandContext = () => {
+  const context = useContext(CommandContext);
+  if (!context)
+    throw new Error(
+      'Command components must be used within a `Command` or `CommandDialog` component'
+    );
+  return context;
+};
 
 // ────────────────────────────────────────────────────────────────
 // PROP TYPES
@@ -33,7 +42,7 @@ interface CommandProps extends React.HTMLAttributes<HTMLDivElement> {
 interface CommandDialogProps extends React.HTMLAttributes<HTMLDivElement> {
   children: ReactNode;
   open: boolean;
-  setOpen: React.Dispatch<SetStateAction<boolean>>;
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 interface CommandEmptyProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -119,12 +128,6 @@ const CommandDialog: FC<CommandDialogProps> = ({
 };
 
 const CommandEmpty: FC<CommandEmptyProps> = ({ children }) => {
-  const context = useContext(CommandContext);
-  if (!context)
-    throw new Error(
-      'CommandEmpty must be used inside of a Command or CommandDialog'
-    );
-
   return <div className="text-center p-4">{children}</div>;
 };
 
@@ -143,8 +146,8 @@ const CommandGroup: FC<CommandGroupProps> = ({
 };
 
 const CommandInput: FC<CommandInputProps> = ({ className = '', ...props }) => {
-  const context = useContext(CommandContext);
-  if (!context) throw new Error('CommandInput must be used within a Command');
+  const context = useCommandContext();
+
   const { searchQuery, setSearchQuery } = context;
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -185,12 +188,8 @@ const CommandItem: FC<CommandItemProps> = ({
   index,
   ...props
 }) => {
-  const context = useContext(CommandContext);
-  if (!context) {
-    throw new Error(
-      'CommandItem must be used inside a Command or CommandDialog'
-    );
-  }
+  const context = useCommandContext();
+
   const { selectedIndex, setSelectedIndex } = context;
   const isSelected = selectedIndex === index;
   return (
@@ -215,11 +214,6 @@ const CommandSeparator: FC<CommandSeparatorProps> = ({
   className = '',
   ...props
 }) => {
-  const context = useContext(CommandContext);
-  if (!context)
-    throw new Error(
-      'CommandSeparator has to be used inside of a Command or CommandDialog'
-    );
   return (
     <hr className={`min-h-[1px] h-[1px] bg-border ${className}`} {...props} />
   );
@@ -263,31 +257,26 @@ const filterCommands = (children: ReactNode, query: string): ReactNode => {
   return React.Children.map(children, (child) => {
     if (!React.isValidElement(child)) return child;
     const element = child as ReactElement<any>;
-
     if ((element as any).type.name === 'CommandSeparator') {
       return null;
     }
-
     if ((element as any).type.name === 'CommandGroup') {
       const filteredChildren = filterCommands(element.props.children, query);
       if (!filteredChildren || React.Children.count(filteredChildren) === 0)
         return null;
       return React.cloneElement(element, { children: filteredChildren });
     }
-
     if ((element as any).type.name === 'CommandItem') {
       const text = getTextFromReactNode(element.props.children);
       return text.toLowerCase().includes(query.toLowerCase()) ? element : null;
     }
-
     return element;
   });
 };
 
-// ────────────────────────────────────────────────────────────────
-// AUTO-INDEXING HELPER
-// ────────────────────────────────────────────────────────────────
-
+/**
+ * Recursively inject indexes into command children.
+ */
 const injectIndex = (
   child: ReactNode,
   counter: { current: number }
@@ -319,39 +308,39 @@ const CommandList: FC<CommandListProps> = ({
   children,
   ...props
 }) => {
-  const context = useContext(CommandContext);
-  if (!context)
-    throw new Error(
-      'CommandList must be used inside of a Command or CommandDialog'
-    );
+  const context = useCommandContext();
 
   const query = context?.searchQuery || '';
 
-  // Separate `CommandEmpty` from other children
-  let commandEmpty: ReactNode | null = null;
-  const validChildren: ReactNode[] = [];
+  // Memoize splitting children into CommandEmpty and valid children
+  const { commandEmpty, validChildren } = useMemo(() => {
+    let commandEmpty: ReactNode | null = null;
+    const validChildren: ReactNode[] = [];
+    React.Children.forEach(children, (child) => {
+      if (
+        React.isValidElement(child) &&
+        (child as any).type.name === 'CommandEmpty'
+      ) {
+        commandEmpty = child; // Store CommandEmpty for later
+      } else {
+        validChildren.push(child);
+      }
+    });
+    return { commandEmpty, validChildren };
+  }, [children]);
 
-  React.Children.forEach(children, (child) => {
-    if (
-      React.isValidElement(child) &&
-      (child as any).type.name === 'CommandEmpty'
-    ) {
-      commandEmpty = child; // Store CommandEmpty for later
-    } else {
-      validChildren.push(child); // Store valid children
-    }
-  });
+  // Memoize filtering based on the search query
+  const filteredChildren = useMemo(() => {
+    return query.trim() ? filterCommands(validChildren, query) : validChildren;
+  }, [query, validChildren]);
 
-  // Filter items based on search query
-  const filteredChildren = query.trim()
-    ? filterCommands(validChildren, query)
-    : validChildren;
-
-  // Inject indexes for selection behavior
-  const counter = { current: 0 };
-  const childrenWithIndex = React.Children.map(filteredChildren, (child) =>
-    injectIndex(child, counter)
-  );
+  // Memoize injecting indexes for selection behavior
+  const childrenWithIndex = useMemo(() => {
+    const counter = { current: 0 };
+    return React.Children.map(filteredChildren, (child) =>
+      injectIndex(child, counter)
+    );
+  }, [filteredChildren]);
 
   return (
     <div className={className} {...props}>
