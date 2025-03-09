@@ -32,7 +32,7 @@ const Button = ({
   disabled?: boolean;
   icon?: boolean;
 }) => {
-  const baseClasses = `inline-flex items-center justify-center h-10 rounded-lg transition-colors duration-150 cursor-pointer disabled:cursor-not-allowed`;
+  const baseClasses = `p inline-flex items-center justify-center h-10 rounded-lg transition-colors duration-150 cursor-pointer disabled:cursor-not-allowed`;
   const paddingClasses = icon ? 'w-10 h-10' : 'px-6 py-2 min-w-20';
 
   return (

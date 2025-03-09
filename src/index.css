@@ -10,6 +10,59 @@
   --color-succes: #32936f;
   --color-error: #ee0000;
   --color-warning: #ffcc00;
+
+  --animate-slideInFromRight: slideInFromRight 0.15s ease-in-out;
+  --animate-slideInFromLeft: slideInFromLeft 0.15s ease-in-out;
+  --animate-slideOutToRight: slideOutToRight 0.15s ease-in-out;
+  --animate-slideOutToLeft: slideOutToLeft 0.15s ease-in-out;
+
+  /* Slide-in from the right */
+  @keyframes slideInFromRight {
+    from {
+      transform: translateX(10%);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+
+  /* Slide-in from the left */
+  @keyframes slideInFromLeft {
+    from {
+      transform: translateX(-10%);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+
+  /* Slide-out to the right */
+  @keyframes slideOutToRight {
+    from {
+      transform: translateX(0);
+      opacity: 1;
+    }
+    to {
+      transform: translateX(100%);
+      opacity: 0;
+    }
+  }
+
+  /* Slide-out to the left */
+  @keyframes slideOutToLeft {
+    from {
+      transform: translateX(0);
+      opacity: 1;
+    }
+    to {
+      transform: translateX(-100%);
+      opacity: 0;
+    }
+  }
 }
 
 @layer base {
@@ -24,8 +77,8 @@
     font-family: 'Inter', 'Open Sans';
   }
   .h1 {
-    font-size: 50.52px;
-    line-height: 67.34px;
+    font-size: 67.34px;
+    line-height: 89.76px;
     font-weight: 800;
   }
   .h2 {

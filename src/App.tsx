@@ -91,6 +91,14 @@ import { Toggle } from './ModernTheme/Toggle';
 import { Switch } from './ModernTheme/Switch';
 import { Textarea } from './ModernTheme/Textarea';
 import { Slider } from './ModernTheme/Slider';
+import {
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuTrigger,
+} from './ModernTheme/NavigationMenu';
+import { Link } from 'react-router-dom';
 function App() {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [checked, setChecked] = useState(false);
@@ -494,6 +502,141 @@ function App() {
       <div className="w-[80%] mx-auto">
         <h3 className="h3">Label</h3>
         <Label htmlFor="username">Label For Input</Label>
+      </div>
+      <div className="w-[80%] mx-auto mb-50">
+        <h3 className="h3">Navigation Menu</h3>
+
+        <NavigationMenu>
+          {/* Getting Started */}
+          <NavigationMenuItem>
+            <NavigationMenuTrigger>Getting Started</NavigationMenuTrigger>
+            <NavigationMenuContent>
+              <ul className="grid gap-3 p-6 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]">
+                <li className="row-span-3">
+                  <Link
+                    className="flex h-full w-full select-none flex-col justify-end rounded-md bg-surface   p-6 no-underline outline-none focus:shadow-md"
+                    to="/"
+                  >
+                    <div className="mb-2 mt-4 text-lg font-medium">
+                      shadcn/ui
+                    </div>
+                    <p className="p text-subtext">
+                      Beautifully designed components that you can copy and
+                      paste into your apps. Accessible. Customizable. Open
+                      Source.
+                    </p>
+                  </Link>
+                </li>
+                <li>
+                  <NavigationMenuLink to="/docs">
+                    <p className="p">Introduction</p>
+                    <p className="p text-subtext">
+                      Re-usable components using nothing but pure React Code and
+                      TailwindCSS
+                    </p>
+                  </NavigationMenuLink>
+                </li>
+                <li>
+                  <NavigationMenuLink to="/installation">
+                    <p className="p">Instalation</p>
+                    <p className="p text-subtext">
+                      How to install dependencies and structure your app
+                    </p>
+                  </NavigationMenuLink>
+                </li>
+                <li>
+                  <NavigationMenuLink to="/typography">
+                    <p className="p">Typography</p>
+                    <p className="p text-subtext">
+                      Styles for headings, paragraphs etc...
+                    </p>
+                  </NavigationMenuLink>
+                </li>
+              </ul>
+            </NavigationMenuContent>
+          </NavigationMenuItem>
+
+          {/* Components */}
+          <NavigationMenuItem>
+            <NavigationMenuTrigger>Components</NavigationMenuTrigger>
+            <NavigationMenuContent>
+              <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
+                <li>
+                  <Link
+                    className="block p-2 rounded-md hover:bg-surface transition-colors duration-150"
+                    to="/components/buttons"
+                  >
+                    Buttons
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    className="block p-2 rounded-md hover:bg-surface transition-colors duration-150"
+                    to="/components/cards"
+                  >
+                    Cards
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    className="block p-2 rounded-md hover:bg-surface transition-colors duration-150"
+                    to="/components/modals"
+                  >
+                    Modals
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    className="block p-2 rounded-md hover:bg-surface transition-colors duration-150"
+                    to="/components/tables"
+                  >
+                    Tables
+                  </Link>
+                </li>
+              </ul>
+            </NavigationMenuContent>
+          </NavigationMenuItem>
+
+          {/* Resources */}
+          <NavigationMenuItem>
+            <NavigationMenuTrigger>Resources</NavigationMenuTrigger>
+            <NavigationMenuContent>
+              <ul className="grid w-[350px] gap-3 p-4">
+                <li>
+                  <Link
+                    className="block p-2 rounded-md hover:bg-surface transition-colors duration-150"
+                    to="/tutorials"
+                  >
+                    Tutorials
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    className="block p-2 rounded-md hover:bg-surface transition-colors duration-150"
+                    to="/blog"
+                  >
+                    Blog
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    className="block p-2 rounded-md hover:bg-surface transition-colors duration-150"
+                    to="/faq"
+                  >
+                    FAQ
+                  </Link>
+                </li>
+              </ul>
+            </NavigationMenuContent>
+          </NavigationMenuItem>
+
+          {/* Documentation Link (Standalone) */}
+          <NavigationMenuItem>
+            <Link to="/docs">
+              <Button variant="ghost">Documentation</Button>
+            </Link>
+          </NavigationMenuItem>
+        </NavigationMenu>
       </div>
       <div className="w-[80%] mx-auto">
         <h3 className="h3">Popover</h3>
